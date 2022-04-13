@@ -94,11 +94,14 @@ def format_print(text, start=1, end=-1, color='black', is_bold=True):
 
 
 def take_val_from_column(row, col):
-    """Get value from column in fixed row, determined by the configuration."""
+    """Get value from column in fixed row, determined by the configuration.
     match col:
         case '<left-most>': return row[0]
         case 'Year ended <MON> <DAY>, / <YYYY>': return row[7]    #TODO:WFC
         case _: return None
+    """
+    icol = int(col)
+    return row[icol]
 
 
 def correct_row_list(row_list):
@@ -114,12 +117,17 @@ def correct_row_list(row_list):
     def has_numbers_in_parentheses(s):
         return bool(re.search(r'\(\S+\)', s))
 
+    def has_numbers(inputString):
+        return any(char.isdigit() for char in inputString)
+
     def robust_str_to_float(val):
         """Robustly convert string value to float."""
-        if val != '':
+        if val != '' and has_numbers(val):
             num = float(re.sub("[^0-9.\-]","",val))
             num_1 = -num if has_numbers_in_parentheses(val) else num
             return num_1
+        else:
+            return val
 
     separated_row = separate_items_with_spaces(row_list)
     float_row = [robust_str_to_float(item) for item in  separated_row ]
@@ -155,7 +163,7 @@ def load_config_account_info(file=None):
                     xbrl = tmp_rec['xbrl'],
                     table_name = tmp_rec['table_name'],
                     table_account = tmp_rec['table_title'],
-                    table_column = tmp_rec['table_column'],
+                    table_column = tmp_rec['col_idx'],
                     scale = tmp_rec['scale'],
                     discover_terms = get_default_if_missing(rec=tmp_rec, key='discover_terms'),
                     search_terms = get_default_if_missing(rec=tmp_rec, key='search_terms'),

@@ -1,9 +1,11 @@
+import sys
 from pathlib import Path
 import pickle
 import time
 import re
 
 import tidy
+import bs4
 from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
@@ -18,7 +20,7 @@ from .utils import (
 )
 
 
-
+#sys.setrecursionlimit(100)
 
 config_template = [
     {'cik': 'number',
@@ -67,28 +69,30 @@ class Extractor():
         print(f'Directory: {result_key}')
 
         for acct, acct_rec in self.config[tkr].accounts.items():
-            if doc.Description != acct_rec.exhibits: continue
+            if doc.Description != acct_rec.exhibits or type(acct_rec.table_account) != str:
+                continue
             print(f'Account: {acct}')
 
             dir = doc.FS_Location.parents[0]
             tbl_output_path = dir / 'tmp' / f'{acct}.html'
             pdf_output_path = dir / 'tmp' / f'{acct}.pdf'
             acct_title = self.config[tkr].accounts[acct].table_account
-            check =  self.check_extractable_html(doc.FS_Location, tkr, acct)
+            #check =  self.check_extractable_html(doc.FS_Location, tkr, acct)
             check = True                        #TODO:determine what to check
 
             if check:
                 try:
                     selected_table = self.select_table(doc.FS_Location, tkr, acct)
-                    self.format_and_save_table(selected_table[0]['string'], tbl_output_path)
+                    self.format_and_save_table(selected_table, tbl_output_path)    #previously: selected_table[0]['string']
                     self.convert_html_to_pdf(path_html=tbl_output_path, 
                                             path_pdf=pdf_output_path
                                             )
                     df = self.get_df_from_pdf(pdf_output_path)
                     col = self.config[tkr].accounts[acct].table_column
-                    val = self.get_account_value(df, term=acct_title, column=col)
+                    val = self.get_account_value(df, term=acct_title, column=col)    #TODO: chg to col_idx
                     rec[acct] = val
-                except:
+                except Exception as e:
+                    print(f"Exception: {e}")
                     continue
             else:
                 break
@@ -152,17 +156,87 @@ class Extractor():
 
     def select_table(self, doc, firm, account):
         """Given an html file with multiple tables, select a specific table using multiple criterion.
+        TODO: two possibilities
+        * (local minima) C Total loans, net - not getting CITIGROUP CONSOLIDATED BALANCE SHEET
+        * (sibling)
+        algorithm:
+        i) recursively go through siblings looking for a table
+        ii) move up to parent, look for table, then do (i)
+        iii) if table is found .find_all(text=re.compile(table_acct))
+        iv) if multiple tables with table_acct found, choose the first
+        """
 
         """
+        def get_parent_recurse(tag):
+            tbl = tag.parent.find('table')
+            while tbl == None:
+                tag = tag.parent
+                tbl = tag.find('table')
+            return tbl  
+
+        def get_next_table(soup, table_name, table_acct):
+            possible = []
+            tags = soup.find_all(text=re.compile(table_name))
+            for tag in tags:
+                tbl = get_parent_recurse(tag)
+                win = tbl.find_all(text=re.compile(table_acct))
+                if win == []:
+                possible.append(win)
+            return possible
+        """
+
+        def get_sibling_recurse(tag, table_acct):
+            sib = tag.next_sibling
+            if sib: 
+                tbl = sib.find('table')
+                if type(tbl) == bs4.element.Tag:
+                    accts = tbl.find_all(text=table_acct)
+                    if accts != []:
+                        return tbl
+                    else:
+                        tbl = get_sibling_recurse(sib, table_acct)
+                        return tbl
+                else:
+                    tbl = get_sibling_recurse(sib, table_acct)
+                    return tbl
+            else:
+                par = tag.parent
+                if par:
+                    tbl = par.find('table')
+                    if type(tbl) == bs4.element.Tag:
+                        accts = tbl.find_all(text=table_acct)
+                        if accts != []:
+                            return tbl
+                        else:
+                            tbl = get_sibling_recurse(par, table_acct)
+                            return tbl
+                    else:
+                        tbl = get_sibling_recurse(par, table_acct)
+                        return tbl
+                else:
+                    return None
+
+                
         start_time = time.time()
         acct = self.config[firm].accounts[account]
-        search_terms= acct.search_terms
+        search_terms = acct.search_terms
         table_lst = []
         html_string = ()
+        possible = []
         with open(doc) as f:
             html = f.read()
             soup = BeautifulSoup(html, 'lxml')
-            tags = soup.find_all(text=re.compile(search_terms))
+            tags = soup.find_all(text=re.compile(acct.table_name))
+            #possible = get_next_table(soup, acct.table_name, acct.table_account)
+            for tag in tags:
+                try:
+                    tbl = get_sibling_recurse(tag, acct.table_account)
+                    possible.append(tbl)
+                except RecursionError as re:
+                    print('Maximum recursion limit reached')
+                    continue
+        print(len(possible))
+        return possible[0].__str__()
 
         tbls = []
         for idx, tag in enumerate(tags):
@@ -220,7 +294,6 @@ class Extractor():
 
     def get_account_value(self, df, column, term='Total allowance for credit losses', display_terms=3, index_term=0):
         """Given a dataframe and target context, extract the specific account value.
-        TODO: integrate utils.robust_str_to_float(val)
         TODO: add index column that has '/' to denote carriage return
         TODO: add to include column more than <left-most>
         """

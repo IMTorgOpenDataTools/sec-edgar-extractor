@@ -30,7 +30,10 @@ def test_extract_process():
         loc = path_loc / html_file
         doc = Doc(Description=desc, FS_Location=loc)
         rec = ex.execute_extract_process(doc=doc, ticker=k)
+        print(rec)
         result[k] = rec == output
-        
-    summary = {k:v for k,v in result.items() if v == True}
-    assert len(summary) == len(result)
+
+    print(result)
+    #summary = {k:v for k,v in result.items() if v == True}
+    #assert len(summary) == len(result)
+    assert True == False
