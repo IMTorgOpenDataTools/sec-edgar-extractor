@@ -5,23 +5,23 @@
     "C": {
         "input_file":"c-20211231xex99d2.htm",
         "input_desc": "EX-99.2",
-        "output": {"c-20211231xex99d2.htm": {"ACL": 26426.0}}
+        "output": {"c-20211231xex99d2.htm": {"ACL": -16455.0, "PCL": -3103.0, "Loans": 651312.0, "ACLpctLoan": 3.73}}
     },
     
     "ALLY": {
         "input_file":"d299696dex993.htm",
         "input_desc": "EX-99.3",
-        "output": {"d299696dex993.htm": {"PCL": 113.0}}
+        "output": {"d299696dex993.htm": {"PCL": 144.0, "Loans": 119001.0, "ChargeOffs": 94.0}}
     },
     "CFG": {
         "input_file":"a4q21earningsrelease.htm",
         "input_desc": "EX-99.1",
-        "output": {"exhibit472021.htm": {"Loans": 128163.0}}
+        "output": {"a4q21earningsrelease.htm": {"ACL": 1934.0, "PCL": -25.0, "Loans": 128163.0, "ACLpctLoan": 1.51, "ChargeOffs": 45.0}}
     },
     "TFC": {
         "input_file":"ex992-qps4q21.htm",
         "input_desc": "EX-99.2",
-        "output": {"q42021financialsupplement": {"PCL": -103.0, "ChargeOffs": 0.25, "Loans": 3411.0}}
+        "output": {"ex992-qps4q21.htm": {"ACL":4695.0, "PCL": -813.0, "ChargeOffs": -697.0, "Loans": 294325.0}}
     },
     "PNC": {
         "input_file":"q42021financialsupplement.htm",

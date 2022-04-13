@@ -7,9 +7,32 @@ import json
 from bs4 import BeautifulSoup
 
 from sec_edgar_extractor.extract import Doc, Extractor
+from sec_edgar_extractor import utils
 
 
 
+
+def test_select_table():
+    path_loc = Path('./tests/data/press_release')
+    files = path_loc / 'files.json'
+    ticker = 'TFC'                               #TODO: change to for loop 
+
+    with open(files, 'r') as f:
+        string = f.read()
+        data = json.loads(string)
+    config = utils.load_config_account_info()
+    ex = Extractor(config)
+
+    firm = ticker
+    file = list(data[ticker].items())[0][1]
+    doc = path_loc / file
+    accounts = list(data[ticker].items())[2][1][file].keys()
+    rec = {}
+
+    for account in accounts:
+        selected_table =  ex.select_table(doc, firm, account)
+        rec[account] = selected_table
+    assert True == True
 
 
 def test_extract_process():

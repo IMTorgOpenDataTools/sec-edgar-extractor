@@ -1,6 +1,8 @@
 import pytest
 
 import os
+from pathlib import Path
+import json
 import shutil
 from bs4 import BeautifulSoup
 
@@ -45,19 +47,19 @@ def test_check_extractable_html():
     cnt = len(tabular_vals)
     assert cnt == 10
 
+
 def test_select_table():
+    """TODO: change to earlier"""
     html_doc = [('WFC', './tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm'),
                 ('C', './tests/data/press_release/c-20211231xex99d2.htm')
                 ]
+    firm = 'WFC'
     account = 'ACL'
-    config = utils.load_config_account_info()
-    ex = Extractor(config)
 
-    for doc in html_doc:
-        firm = doc[0]
-        selected_table =  ex.select_table(doc[1], firm, account)
-        #tmp = selected_table[0]['td_count'] == 1030
-    assert True == True
+    ex = Extractor(config)
+    selected_table =  ex.select_table(html_doc['wfc-99.2'], firm, account)
+    assert selected_table[0]['td_count'] == 1030
+
 
 def test_format_and_save_table():
     html_doc = {'wfc-99.2': './tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm'}
@@ -74,6 +76,7 @@ def test_format_and_save_table():
     idx = os.listdir(tmp_out).index(file_out)
     shutil.rmtree(tmp_out, ignore_errors=True)
     assert idx == 0
+
 
 def test_single_record_process():
     html_doc = {'wfc-99.2': './tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm'}
@@ -99,6 +102,7 @@ def test_single_record_process():
     val = ex.get_account_value(df, term=firm_title)
     flt = utils.robust_str_to_float(val)
     assert flt == 13788.0
+
 
 def test_convert_html_to_pdf():
     assert True

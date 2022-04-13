@@ -166,26 +166,14 @@ class Extractor():
         iv) if multiple tables with table_acct found, choose the first
         """
 
-        """
-        def get_parent_recurse(tag):
-            tbl = tag.parent.find('table')
-            while tbl == None:
-                tag = tag.parent
-                tbl = tag.find('table')
-            return tbl  
-
-        def get_next_table(soup, table_name, table_acct):
-            possible = []
-            tags = soup.find_all(text=re.compile(table_name))
-            for tag in tags:
-                tbl = get_parent_recurse(tag)
-                win = tbl.find_all(text=re.compile(table_acct))
-                if win == []:
-                possible.append(win)
-            return possible
-        """
-
         def get_sibling_recurse(tag, table_acct):
+            """ """
+            if hasattr(tag,'name'):
+                if tag.name == 'table':
+                    tbl = tag
+                    accts = tbl.find_all(text=table_acct)
+                    if accts != []:
+                        return tbl
             sib = tag.next_sibling
             if sib: 
                 tbl = sib.find('table')
@@ -216,56 +204,31 @@ class Extractor():
                 else:
                     return None
 
-                
         start_time = time.time()
         acct = self.config[firm].accounts[account]
-        search_terms = acct.search_terms
         table_lst = []
-        html_string = ()
-        possible = []
+        selected_tables = []
         with open(doc) as f:
             html = f.read()
             soup = BeautifulSoup(html, 'lxml')
-            tags = soup.find_all(text=re.compile(acct.table_name))
-            #possible = get_next_table(soup, acct.table_name, acct.table_account)
+            tags = soup.find_all(text=acct.table_name)     #TODO:table_name may be broken (separated) among tags, TODO:maybe search by multiple terms (table, account, column)
+            if tags == []:
+                names = acct.table_name.split()
+                nested_items = [soup.find_all(text=re.compile(name)) for name in names]
+                [table_lst.extend(item) for item in nested_items if item != [] ]
+                tags = list(set(table_lst))
             for tag in tags:
                 try:
                     tbl = get_sibling_recurse(tag, acct.table_account)
-                    possible.append(tbl)
-                except RecursionError as re:
+                    if tbl != None:
+                        selected_tables.append(tbl)
+                except RecursionError as recerr:
                     print('Maximum recursion limit reached')
                     continue
-        print(len(possible))
-        return possible[0].__str__()
-
-        tbls = []
-        for idx, tag in enumerate(tags):
-            tbl = tag.find_parent('table')
-            if tbl != None:
-                tbls.append( {'doc': doc,
-                              'len': len(tbl),
-                              'td_count': tbl.find_all('td').__len__(),
-                              'string': str(tbl)
-                             } 
-                           )
-        #rule-1: take largest table
-        if len(tbls) > 0 and tbls != []:
-            tbls_sorted = sorted(tbls, key=lambda x:x['len'], reverse=True)
-            html_string = tbls_sorted[0]
-        #rule-2: take table with most <td>
-        if len(tbls) > 0 and tbls != []:
-            tbls_sorted = sorted(tbls, key=lambda x:x['td_count'], reverse=True)
-            html_string = tbls_sorted[0]
-        #TODO: rule-3: take table by name
-        #TODO: rule-4: take table with matching account titles
-
-        #result        
-        if html_string != ():    
-            table_lst.append(html_string)
-            html_string = ()
+        unique_tables = list(set(selected_tables))
+        print(len(unique_tables))
         print(f"log: execution took: {round(time.time() - start_time, 3)}sec")
-        return table_lst
-
+        return unique_tables[0].__str__()
 
 
     def format_and_save_table(self, table_soup, path_html):

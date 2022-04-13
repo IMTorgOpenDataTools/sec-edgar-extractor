@@ -1,8 +1,9 @@
 {
-    "C": {
-        "input_file":"c-20211231xex99d2.htm",
+
+    "TFC": {
+        "input_file":"ex992-qps4q21.htm",
         "input_desc": "EX-99.2",
-        "output": {"c-20211231xex99d2.htm": {"ACL": 26426.0}}
+        "output": {"ex992-qps4q21.htm": {"ACL":4695.0, "PCL": -813.0, "ChargeOffs": -697.0, "Loans": 294325.0}}
     }
 
 }
