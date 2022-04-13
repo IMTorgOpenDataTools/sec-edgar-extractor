@@ -12,8 +12,8 @@ import camelot
 from rapidfuzz import process, fuzz
 
 from .utils import (
-    robust_str_to_float,
-    search_docs_for_terms,
+    correct_row_list,
+    take_val_from_column,
     load_config_account_info
 )
 
@@ -57,33 +57,40 @@ class Extractor():
 
 
     def execute_extract_process(self, doc, ticker):
-        """Run the other class methods in sequence to complete the entire extraction process."""
+        """Run the other class methods in sequence to complete the entire extraction process.
+        TODO: replace files if in prod, o/w do not take time to re-run task
+        """
         result = {}
         rec = {}
         tkr = ticker
-        result_key = ('|').join(doc.FS_Location.__str__().split('/')[7:9])
+        result_key = doc.FS_Location.name       #TODO: ('|').join(doc.FS_Location.__str__().split('/')[7:9])
         print(f'Directory: {result_key}')
 
         for acct, acct_rec in self.config[tkr].accounts.items():
-            if doc.Description != acct_rec.exhibits: break
+            if doc.Description != acct_rec.exhibits: continue
             print(f'Account: {acct}')
 
             dir = doc.FS_Location.parents[0]
-            tbl_output_path = dir / f'{acct}.html'
-            pdf_output_path = dir / f'{acct}.pdf'
+            tbl_output_path = dir / 'tmp' / f'{acct}.html'
+            pdf_output_path = dir / 'tmp' / f'{acct}.pdf'
             acct_title = self.config[tkr].accounts[acct].table_account
-            try:
-                check =  self.check_extractable_html(doc.FS_Location, tkr, acct)
-                selected_table =  self.select_table(doc.FS_Location, tkr, acct)
-                self.format_and_save_table(selected_table[0]['string'], tbl_output_path)
-                self.convert_html_to_pdf(path_html=tbl_output_path, 
-                                        path_pdf=pdf_output_path
-                                        )
-                df = self.get_df_from_pdf(pdf_output_path)    #TODO:why all the /n chars
-                val = self.get_account_value(df, term=acct_title)
-                flt = robust_str_to_float(val)
-                rec[acct] = flt
-            except:
+            check =  self.check_extractable_html(doc.FS_Location, tkr, acct)
+            check = True                        #TODO:determine what to check
+
+            if check:
+                try:
+                    selected_table = self.select_table(doc.FS_Location, tkr, acct)
+                    self.format_and_save_table(selected_table[0]['string'], tbl_output_path)
+                    self.convert_html_to_pdf(path_html=tbl_output_path, 
+                                            path_pdf=pdf_output_path
+                                            )
+                    df = self.get_df_from_pdf(pdf_output_path)
+                    col = self.config[tkr].accounts[acct].table_column
+                    val = self.get_account_value(df, term=acct_title, column=col)
+                    rec[acct] = val
+                except:
+                    continue
+            else:
                 break
         result[result_key] = rec
         return result
@@ -211,15 +218,16 @@ class Extractor():
         return df_edit
 
 
-    def get_account_value(self, df, term='Total allowance for credit losses', display_terms=3, index_term=0):
+    def get_account_value(self, df, column, term='Total allowance for credit losses', display_terms=3, index_term=0):
         """Given a dataframe and target context, extract the specific account value.
         TODO: integrate utils.robust_str_to_float(val)
         TODO: add index column that has '/' to denote carriage return
         TODO: add to include column more than <left-most>
         """
         lst = df.loc[:,0].to_list()
-        idx_term = process.extract(term, lst, scorer=fuzz.WRatio, limit=display_terms)
-        print(idx_term)
-        idx = df.loc[:,0].to_list().index(idx_term[index_term][0])
-        val = df.loc[idx][1]    #TODO:get first value that is not '' empty
+        idx_terms = process.extract(term, lst, scorer=fuzz.WRatio, limit=display_terms)
+        idx = idx_terms[0][2]
+        row = df.loc[idx].tolist()[1:] 
+        fixed_row = correct_row_list(row)
+        val = take_val_from_column(fixed_row, column)    
         return val

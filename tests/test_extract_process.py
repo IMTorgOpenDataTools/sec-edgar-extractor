@@ -1,7 +1,9 @@
 import pytest
 
 import os
+from pathlib import Path
 import shutil
+import json
 from bs4 import BeautifulSoup
 
 from sec_edgar_extractor.extract import Doc, Extractor
@@ -10,17 +12,25 @@ from sec_edgar_extractor.extract import Doc, Extractor
 
 
 
-
-
-
-
 def test_extract_process():
-    tkr = 'USB'
-    desc='EX-99.1'
-    loc='./tests/data/usb/d262424dex991.htm'
-    #desc='EX-99.2'
-    #loc='./tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm'
-    doc = Doc(Description=desc, FS_Location=loc)
+    path_loc = Path('./tests/data/press_release')
+    files = path_loc / 'files.json'
+
+    with open(files, 'r') as f:
+        string = f.read()
+        data = json.loads(string)
+    
     ex = Extractor()
-    result = ex.execute_extract_process(doc=doc, ticker=tkr)
-    assert True == True
+    result = {}
+    for k in data.keys():
+        html_file = data[k]['input_file']
+        desc = data[k]['input_desc']
+        output = data[k]['output']
+
+        loc = path_loc / html_file
+        doc = Doc(Description=desc, FS_Location=loc)
+        rec = ex.execute_extract_process(doc=doc, ticker=k)
+        result[k] = rec == output
+        
+    summary = {k:v for k,v in result.items() if v == True}
+    assert len(summary) == len(result)

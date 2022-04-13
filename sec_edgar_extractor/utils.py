@@ -93,13 +93,38 @@ def format_print(text, start=1, end=-1, color='black', is_bold=True):
     print( combine )
 
 
-def robust_str_to_float(val):
-    """Robustly convert string value to float."""
-    #TODO:add () for negatives
-    if val != '':
-        return float(re.sub("[^0-9.\-]","",val))
-    else:
-        return val
+def take_val_from_column(row, col):
+    """Get value from column in fixed row, determined by the configuration."""
+    match col:
+        case '<left-most>': return row[0]
+        case 'Year ended <MON> <DAY>, / <YYYY>': return row[7]    #TODO:WFC
+        case _: return None
+
+
+def correct_row_list(row_list):
+    """Correct the input row list so that values can be extracted.
+    """
+    def separate_items_with_spaces(row_list):
+        """Take a list of items and separate into new items if they contain spaces."""
+        remove_list = [None, '', '$']
+        tmp1 = []
+        [tmp1.extend(item.split()) for item in row_list if item not in remove_list]
+        return tmp1
+
+    def has_numbers_in_parentheses(s):
+        return bool(re.search(r'\(\S+\)', s))
+
+    def robust_str_to_float(val):
+        """Robustly convert string value to float."""
+        if val != '':
+            num = float(re.sub("[^0-9.\-]","",val))
+            num_1 = -num if has_numbers_in_parentheses(val) else num
+            return num_1
+
+    separated_row = separate_items_with_spaces(row_list)
+    float_row = [robust_str_to_float(item) for item in  separated_row ]
+    nonempty_float_row = [item for item in float_row if item!=None]
+    return nonempty_float_row
 
 
 def load_config_account_info(file=None):
