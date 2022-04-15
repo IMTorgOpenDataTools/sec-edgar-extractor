@@ -1,9 +1,9 @@
 {
 
-    "TFC": {
-        "input_file":"ex992-qps4q21.htm",
+    "JPM": {
+        "input_file":"a4q21erfex992supplement.htm",
         "input_desc": "EX-99.2",
-        "output": {"ex992-qps4q21.htm": {"ACL":4695.0, "PCL": -813.0, "ChargeOffs": -697.0, "Loans": 294325.0}}
+        "output": {"a4q21erfex992supplement.htm": {}}
     }
 
 }

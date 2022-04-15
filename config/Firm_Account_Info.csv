@@ -10,9 +10,9 @@ USB,ACL,FinancingReceivableAllowanceForCreditLosses,In API  ,ALLOWANCE FOR CREDI
 USB,PCL,ProvisionForLoanLeaseAndOtherLosses,In API  ,ALLOWANCE FOR CREDIT LOSSES,Provision for credit losses,<left-most>,0,NA,,,,EX-99.1,NA
 ,TotalChargeOffs,FinancingReceivableAllowanceForCreditLossesWriteOffs,In API  ,,,,,,,,,,
 USB,NetChargeOffs,usb:FinancingReceivableAllowanceforcreditlosswriteOffNetOfrecovery,Not in API - diff from default,ALLOWANCE FOR CREDIT LOSSES,Total net charge-offs,<left-most>,0,NA,,,,EX-99.1,NA
-USB,Loans,NotesReceivableGross,In API,CONSOLIDATED ENDING BALANCE SHEET ,Total loans and leases held for investment,<left-most>,0,NA,,,,EX-99.1,NA
+USB,Loans,NotesReceivableGross,In API,CONSOLIDATED ENDING BALANCE SHEET,Total loans,<left-most>,0,NA,,,,EX-99.1,NA
 USB,ACLpctLoan,NA,default not in API,ALLOWANCE FOR CREDIT LOSSES,Allowance for creditlosses as a percentage of Period-end loans,<left-most>,0,NA,,,,EX-99.1,NA
-PNC,ACL,FinancingReceivableAllowanceForCreditLosses,In API,Allowance for Credit Losses by Loan Class,Allowance for creit losses,<left-most>,0,NA,,,,EX-99.1,NA
+PNC,ACL,FinancingReceivableAllowanceForCreditLosses,In API,Allowance for Credit Losses by Loan Class,Allowance for credit losses,<left-most>,0,NA,,,,EX-99.1,NA
 PNC,PCL,ProvisionForLoanLossesExpensed,In API - diff from default,Change in Allowance for Loan and Lease Losses,Provision for (recapture of) credit losses,<left-most>,0,NA,,,,EX-99.1,NA
 ,TotalChargeOffs,AllowanceForLoanAndLeaseLossesWriteOffs,In API,,,,,,,,,,
 PNC,NetChargeOffs,FinancingReceivableAllowanceForCreditLossWriteoffAfterRecovery,In API - diff from default,Change in Allowance for Loan and Lease Losses,Total net (charge-offs),<left-most>,0,NA,,,,EX-99.1,NA
@@ -22,7 +22,7 @@ WFC,ACL,FinancingReceivableAllowanceForCreditLosses,In API,CHANGES IN ALLOWANCE 
 WFC,PCL,ProvisionForLoanLeaseAndOtherLosses,In API,CHANGES IN ALLOWANCE FOR CREDIT LOSSES FOR LOANS,Provision for credit losses,"Year ended <MON> <DAY>, / <YYYY>",0,NA,,,,EX-99.2,NA
 ,TotalChargeOffs,AllowanceForLoanAndLeaseLossesWriteOffs,In API,,,,,,,,,,
 WFC,NetChargeOffs,AllowanceForLoanAndLeaseLossesWriteoffsNet,In API,CHANGES IN ALLOWANCE FOR CREDIT LOSSES FOR LOANS,Net loan charge-offs,"Year ended <MON> <DAY>, / <YYYY>",0,NA,,,,EX-99.2,NA
-WFC,Loans,NotesReceivableGross,In API,SUMMARY FINANCIAL DATA,Selected Balance Sheet Data (period-end) / Loans,<left-most>,0,NA,,,,EX-99.2,NA
+WFC,Loans,NotesReceivableGross,In API,CONSOLIDATED BALANCE SHEET,Loans,<left-most>,0,NA,,,,EX-99.2,NA
 WFC,ACLpctLoan,srt:FinancingReceivableAllowanceForCreditLossToOutstandingPercent,In API,CHANGES IN ALLOWANCE FOR CREDIT LOSSES FOR LOANS,Allowance for credit losses for loans as a percentage of: / Total loans,"Year ended <MON> <DAY>, / <YYYY>",0,NA,,,,EX-99.2,NA
 ALLY,ACL,NA,,,NA,<left-most>,0,NA,,,,EX-99.3,NA
 ALLY,ALLL,FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest,,CONSOLIDATED FINANCIAL HIGHLIGHTS,Allowance for loans losses,<left-most>,0,NA,,,,EX-99.3,NA

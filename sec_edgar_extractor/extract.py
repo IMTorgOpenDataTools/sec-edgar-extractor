@@ -166,43 +166,92 @@ class Extractor():
         iv) if multiple tables with table_acct found, choose the first
         """
 
-        def get_sibling_recurse(tag, table_acct):
-            """ """
-            if hasattr(tag,'name'):
-                if tag.name == 'table':
-                    tbl = tag
-                    accts = tbl.find_all(text=table_acct)
-                    if accts != []:
-                        return tbl
-            sib = tag.next_sibling
-            if sib: 
-                tbl = sib.find('table')
-                if type(tbl) == bs4.element.Tag:
-                    accts = tbl.find_all(text=table_acct)
-                    if accts != []:
-                        return tbl
-                    else:
-                        tbl = get_sibling_recurse(sib, table_acct)
-                        return tbl
-                else:
-                    tbl = get_sibling_recurse(sib, table_acct)
-                    return tbl
+        def remove_unuseful_tables(tag):
+            result = None
+            if tag.parent.name == 'a':
+                pass
             else:
-                par = tag.parent
-                if par:
-                    tbl = par.find('table')
-                    if type(tbl) == bs4.element.Tag:
-                        accts = tbl.find_all(text=table_acct)
-                        if accts != []:
-                            return tbl
-                        else:
-                            tbl = get_sibling_recurse(par, table_acct)
-                            return tbl
-                    else:
-                        tbl = get_sibling_recurse(par, table_acct)
-                        return tbl
+                result = tag
+            return result
+
+
+        def verify_table(tag, table_acct):
+            """Verify this is the correct table containing the desired account title."""
+            regex = re.compile('[^a-zA-Z ]')
+            #cond-1: bs4 table
+            if hasattr(tag,'name') and type(tag) in [bs4.element.Tag, bs4.element.NavigableString]:
+                if tag.name == 'table':
+                    #cond-2: multiple rows
+                    rows = tag.find_all('tr')
+                    if len(rows) > 5:
+                        tbl = tag
+                        #cond-3: correct account title TODO:table_acct is difficult to get, using `text=table_acct` must be exact, but using `text=re.compile(table_acct)` requires characters to be appropriately backspaced
+                        #TODO:what about acct.title with multiple lines
+                        escaped_acct = re.escape(table_acct)
+                        accts = tbl.find_all(text=re.compile(escaped_acct))
+                        #intermediate = [regex.sub('', acct.strip()) for acct in accts]
+                        correct_accts = [acct for acct in accts if acct != None]
+                        if correct_accts != []:
+                            return True, len(correct_accts), tbl
+            return False, None, None
+
+
+        def check_children_for_table(tag, table_acct):
+            """Checks children and returns table with most occurrences."""
+            fail = False, None, None
+            result = []
+            if hasattr(tag, 'find_all'):
+                tbls = tag.find_all('table')
+                if len(tbls) > 0:
+                    for tbl in tbls:
+                        rec = verify_table(tbl, table_acct)
+                        if rec[0] == True:
+                            result.append(rec)
+            match len(result):
+                case 0:
+                    return fail
+                case 1:
+                    return result[0]
+                case _:
+                    tbls_sorted = sorted(result, key=lambda x:x[1], reverse=True)
+                    return tbls_sorted[0]
+
+
+        def check_tag_and_children_for_table(tag, table_acct):
+            memoize = {}  #tag and children
+            current_tag = verify_table(tag, table_acct)
+            children_tag = check_children_for_table(tag, table_acct)
+            if current_tag[0]:
+                return current_tag
+            elif children_tag[0]:
+                return children_tag
+            else:
+                return False, None, None
+
+
+
+        def find_table_recurse(tag, table_acct):
+            """Get the correct table if it exists."""
+            try:
+                current_tag = check_tag_and_children_for_table(tag, table_acct)
+                siblings = tag.next_siblings
+                parent = tag.parent
+                if current_tag[0]:
+                    return current_tag
+                elif siblings:
+                    for sib in siblings:
+                        sib_and_children = check_tag_and_children_for_table(sib, table_acct)
+                        if sib_and_children[0]:
+                            return sib_and_children
                 else:
-                    return None
+                    pass
+                tbl = find_table_recurse(parent, table_acct)
+                if tbl[0]: 
+                    return tbl
+            except RecursionError as recerr:
+                print('Maximum recursion limit reached')
+
+
 
         start_time = time.time()
         acct = self.config[firm].accounts[account]
@@ -211,20 +260,21 @@ class Extractor():
         with open(doc) as f:
             html = f.read()
             soup = BeautifulSoup(html, 'lxml')
-            tags = soup.find_all(text=acct.table_name)     #TODO:table_name may be broken (separated) among tags, TODO:maybe search by multiple terms (table, account, column)
+            possible_tags1 = soup.find_all(text=re.compile(acct.table_name))              #TODO:table_name may be broken (separated) among tags, 
+                                                                                          #TODO:maybe search by multiple terms (table, account, column)
+            possible_tags2 = [remove_unuseful_tables(tag) for tag in possible_tags1]
+            possible_tags3 = process.extract(acct.table_name, possible_tags2, scorer=fuzz.WRatio, limit=3)
+            tags = [tag[0] for tag in possible_tags3]
             if tags == []:
                 names = acct.table_name.split()
                 nested_items = [soup.find_all(text=re.compile(name)) for name in names]
                 [table_lst.extend(item) for item in nested_items if item != [] ]
                 tags = list(set(table_lst))
             for tag in tags:
-                try:
-                    tbl = get_sibling_recurse(tag, acct.table_account)
-                    if tbl != None:
-                        selected_tables.append(tbl)
-                except RecursionError as recerr:
-                    print('Maximum recursion limit reached')
-                    continue
+                tbl = find_table_recurse(tag, acct.table_account)
+                if tbl[0]:
+                    selected_tables.append(tbl[2])
+
         unique_tables = list(set(selected_tables))
         print(len(unique_tables))
         print(f"log: execution took: {round(time.time() - start_time, 3)}sec")
@@ -258,12 +308,20 @@ class Extractor():
     def get_account_value(self, df, column, term='Total allowance for credit losses', display_terms=3, index_term=0):
         """Given a dataframe and target context, extract the specific account value.
         TODO: add index column that has '/' to denote carriage return
+        TODO:what about acct.title with multiple lines
         TODO: add to include column more than <left-most>
+        TODO: find where some rows are dropped from df
         """
-        lst = df.loc[:,0].to_list()
-        idx_terms = process.extract(term, lst, scorer=fuzz.WRatio, limit=display_terms)
-        idx = idx_terms[0][2]
-        row = df.loc[idx].tolist()[1:] 
-        fixed_row = correct_row_list(row)
+        def prepare_table_row(df, term, offset=0):
+            lst = df.loc[:,0].to_list()
+            idx_terms = process.extract(term, lst, scorer=fuzz.WRatio, limit=display_terms)
+            idx = idx_terms[0][2] + offset
+            row = df.loc[idx].tolist()[1:] 
+            fixed_row = correct_row_list(row)
+            return fixed_row
+        
+        fixed_row = prepare_table_row(df, term, 0)
+        if fixed_row == []:
+           fixed_row = prepare_table_row(df, term, 1) 
         val = take_val_from_column(fixed_row, column)    
         return val
