@@ -1,0 +1,10 @@
+,ACL,PCL,Loans,ACLpctLoan,ticker,ChargeOffs,ALLL
+0,True,True,True,False,C,,
+1,,True,True,,ALLY,False,
+2,True,True,True,True,CFG,True,
+3,True,True,True,,TFC,,
+4,True,True,False,False,PNC,,
+5,True,True,True,,USB,,
+6,True,True,True,,WFC,,
+7,False,True,False,True,JPM,False,True
+8,,True,True,,GS,,

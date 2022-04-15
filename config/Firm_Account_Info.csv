@@ -36,12 +36,12 @@ GS,PCL,ProvisionForLoanLeaseAndOtherLosses,,Consolidated Statements of Earnings,
 GS,ChargeOffs,AllowanceForLoanAndLeaseLossesWriteOffs,,NA,Net charge-offs,<left-most>,0,NA,,,,NA,NA
 GS,Loans,NotesReceivableGross,,Condensed Consolidated Balance Sheets,Loans,<left-most>,0,billions,,,,EX-99.1,NA
 GS,ACLpctLoan,NA,,NA,NA,<left-most>,0,NA,,,,NA,NA
-JPM,ACL,FinancingReceivableAllowanceForCreditLosses,,Credit-Related Informatoin,Total allowance for credit losses,<left-most>,0,NA,,,,EX-99.2,NA
-JPM,ALLL,FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest,,Credit-Related Informatoin,Total allowance for loan losses,<left-most>,0,NA,,,,EX-99.2,NA
-JPM,PCL,ProvisionForLoanLeaseAndOtherLosses,,Credit-Related Informatoin,PROVISION FOR CREDIT LOSSES / PROVISION FOR CREDIT LOSSES,FULL Year / 2021,0,NA,,,,EX-99.2,NA
-JPM,ChargeOffs,FinancingReceivableAllowanceForCreditLossWriteOffAfterRecovery,,Credit-Related Informatoin,Net charge-offs,FULL Year / 2021,0,NA,,,,EX-99.2,NA
-JPM,Loans,jpm:FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLossesNetOfDeferredIncome,,Credit-Related Informatoin,Total loans,<left-most>,0,NA,,,,EX-99.2,NA
-JPM,ACLpctLoan,NA,,Credit-Related Informatoin,Total allowance to total retained loans,<left-most>,0,NA,,,,EX-99.2,NA
+JPM,ACL,FinancingReceivableAllowanceForCreditLosses,,Credit-Related Information,Total allowance for credit losses,<left-most>,0,NA,,,,EX-99.2,NA
+JPM,ALLL,FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest,,Credit-Related Information,Total allowance for loan losses,<left-most>,0,NA,,,,EX-99.2,NA
+JPM,PCL,ProvisionForLoanLeaseAndOtherLosses,,CONSOLIDATED STATEMENTS OF INCOME,Provision for credit losses,FULL Year / 2021,0,NA,,,,EX-99.2,NA
+JPM,ChargeOffs,FinancingReceivableAllowanceForCreditLossWriteOffAfterRecovery,,Credit-Related Information,Net charge-offs,FULL Year / 2021,0,NA,,,,EX-99.2,NA
+JPM,Loans,jpm:FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLossesNetOfDeferredIncome,,Credit-Related Information,Total loans,<left-most>,0,NA,,,,EX-99.2,NA
+JPM,ACLpctLoan,NA,,Credit-Related Information,Total allowance to total retained loans,<left-most>,0,NA,,,,EX-99.2,NA
 C,ACL,NA,,CITIGROUP CONSOLIDATED BALANCE SHEET,Allowance for credit losses on loans (ACLL),<left-most>,4,NA,,,,EX-99.2,NA
 C,ALLL,NA,,NA,NA,<left-most>,0,NA,,,,EX-99.2,NA
 C,PCL,NA,,ALLOWANCE FOR CREDIT LOSSES ON LOANS AND UNFUNDED LENDING COMMITMENTS,Provision for credit losses on loans (PCLL),FY / Year / 2021,9,NA,,,,EX-99.2,NA

@@ -9,6 +9,7 @@ import bs4
 from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
+import pdfkit
 from wkhtmltopdf import wkhtmltopdf #WKHtmlToPdf
 import camelot
 from rapidfuzz import process, fuzz
@@ -19,8 +20,11 @@ from .utils import (
     load_config_account_info
 )
 
-
+#change default recursion depth until error
 #sys.setrecursionlimit(100)
+
+
+
 
 config_template = [
     {'cik': 'number',
@@ -293,7 +297,12 @@ class Extractor():
         """Apply `py3-wkhtmltopdf` to html file and convert to pdf."""
         #wkhtmltopdf = WKHtmlToPdf(url = path_html,output_file = path_pdf)
         #wkhtmltopdf.render()
-        wkhtmltopdf(url = path_html, output_file = path_pdf)
+        #fix:Blocked access to file
+        options = {
+            "enable-local-file-access": True
+            }
+        pdfkit.from_file(path_html.__str__(), path_pdf.__str__(), options=options)
+        #wkhtmltopdf(url = path_html, output_file = path_pdf)
         return True
 
 
@@ -305,23 +314,29 @@ class Extractor():
         return df_edit
 
 
-    def get_account_value(self, df, column, term='Total allowance for credit losses', display_terms=3, index_term=0):
+    def get_account_value(self, df, column, term='Total allowance for credit losses', display_terms=2, index_term=0):
         """Given a dataframe and target context, extract the specific account value.
         TODO: add index column that has '/' to denote carriage return
         TODO:what about acct.title with multiple lines
         TODO: add to include column more than <left-most>
         TODO: find where some rows are dropped from df
         """
-        def prepare_table_row(df, term, offset=0):
-            lst = df.loc[:,0].to_list()
-            idx_terms = process.extract(term, lst, scorer=fuzz.WRatio, limit=display_terms)
-            idx = idx_terms[0][2] + offset
-            row = df.loc[idx].tolist()[1:] 
+        def process_row_list(idx_term, offset):
+            idx = idx_term[2] + offset
+            row = df.loc[idx].tolist()[1:]
             fixed_row = correct_row_list(row)
             return fixed_row
+
+        OFFSETS= [0,1]
+        def prepare_table_row(df, term):
+            lst = df.loc[:,0].to_list()
+            idx_terms = process.extract(term, lst, scorer=fuzz.WRatio, limit=display_terms)
+            for offset in OFFSETS:
+                for idx_term in idx_terms:
+                    fixed_row = process_row_list(idx_term, offset)
+                    if fixed_row != []:
+                        return fixed_row
         
-        fixed_row = prepare_table_row(df, term, 0)
-        if fixed_row == []:
-           fixed_row = prepare_table_row(df, term, 1) 
+        fixed_row = prepare_table_row(df, term)
         val = take_val_from_column(fixed_row, column)    
         return val

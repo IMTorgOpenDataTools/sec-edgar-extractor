@@ -1,7 +1,5 @@
 {
 
-
-
     "C": {
         "input_file":"c-20211231xex99d2.htm",
         "input_desc": "EX-99.2",
@@ -25,7 +23,7 @@
     "PNC": {
         "input_file":"q42021financialsupplement.htm",
         "input_desc": "EX-99.1",
-        "output": {"q42021financialsupplement": {"ACL": 5530.0, "PCL": -362.0, "ChargeOffs": -124.0, "Loans": 283504.0, "ACLpctLoan": 1.92}}
+        "output": {"q42021financialsupplement.htm": {"ACL": 5530.0, "PCL": -362.0, "ChargeOffs": -124.0, "Loans": 283504.0, "ACLpctLoan": 1.92}}
     },
     "USB": {
         "input_file":"d262424dex991.htm",
@@ -40,12 +38,12 @@
     "JPM": {
         "input_file":"a4q21erfex992supplement.htm",
         "input_desc": "EX-99.2",
-        "output": {"a4q21erfex992supplement.htm": {}}
+        "output": {"a4q21erfex992supplement.htm": {"ACL": 18689.0, "PCL":-1288, "Loans": 1077714.0, "ACLpctLoan": 1.62, "ChargeOffs": 86.0, "ALLL": 12340.0}}
     },
     "GS": {
-        "input_file":"d284129dex992.htm",
-        "input_desc": "EX-99.2",
-        "output": {"d284129dex992.htm": {}}
+        "input_file":"d284129dex991.htm",
+        "input_desc": "EX-99.1",
+        "output": {"d284129dex991.htm": {"PCL": 357.0, "Loans": 158.0}}
     }
 
 }

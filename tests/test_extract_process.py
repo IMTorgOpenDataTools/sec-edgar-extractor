@@ -1,9 +1,11 @@
 import pytest
 
 import os
+import time
 from pathlib import Path
 import shutil
 import json
+import pandas as pd
 from bs4 import BeautifulSoup
 
 from sec_edgar_extractor.extract import Doc, Extractor
@@ -36,15 +38,16 @@ def test_select_table():
 
 
 def test_extract_process():
+    start_time = time.time()
     path_loc = Path('./tests/data/press_release')
-    files = path_loc / 'files.json'
+    files = path_loc / 'files_save.json'
 
     with open(files, 'r') as f:
         string = f.read()
         data = json.loads(string)
     
     ex = Extractor()
-    result = {}
+    result = []
     for k in data.keys():
         html_file = data[k]['input_file']
         desc = data[k]['input_desc']
@@ -54,8 +57,19 @@ def test_extract_process():
         doc = Doc(Description=desc, FS_Location=loc)
         rec = ex.execute_extract_process(doc=doc, ticker=k)
         print(rec)
-        result[k] = rec == output
-    print(result)
-    #summary = {k:v for k,v in result.items() if v == True}
-    #assert len(summary) == len(result)
+        f = html_file
+        new_rec = {key: output[f][key]==rec[f][key] 
+                    for key in list(rec[f].keys()) 
+                    if key in output[f].keys() }
+        new_rec['ticker'] = k
+        result.append(new_rec)
+    df = pd.DataFrame(result)
+    summary = {}
+    cols = df.columns.tolist()
+    cols.remove('ticker')
+    for col in df.columns:
+        rows = df.shape[0]
+        summary[col] = df[col].sum() / rows
+    print(f"log: execution took: {round(time.time() - start_time, 3)}sec")
+    print(summary)
     assert True == True
