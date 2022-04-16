@@ -3,7 +3,7 @@
     "C": {
         "input_file":"c-20211231xex99d2.htm",
         "input_desc": "EX-99.2",
-        "output": {"c-20211231xex99d2.htm": {"ACL": -16455.0, "PCL": -3103.0, "Loans": 651312.0, "ACLpctLoan": 3.73}}
+        "output": {"c-20211231xex99d2.htm": {"ACL": -16455.0, "PCL": -3103.0, "Loans": 651312.0, "ACLpctLoan": 2.49}}
     },
     "ALLY": {
         "input_file":"d299696dex993.htm",

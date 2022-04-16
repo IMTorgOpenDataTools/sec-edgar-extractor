@@ -65,7 +65,6 @@ def search_docs_for_terms(download_folder, search_list, ignore_case=True, file_e
 
 
 
-
 def format_print(text, start=1, end=-1, color='black', is_bold=True):
     """Formatted print of text for use in notebook.
 
@@ -93,6 +92,7 @@ def format_print(text, start=1, end=-1, color='black', is_bold=True):
     print( combine )
 
 
+
 def take_val_from_column(row, col):
     """Get value from column in fixed row, determined by the configuration.
     match col:
@@ -102,6 +102,7 @@ def take_val_from_column(row, col):
     """
     icol = int(col)
     return row[icol]
+
 
 
 def correct_row_list(row_list):
@@ -172,7 +173,7 @@ def load_config_account_info(file=None):
                 tmp_accts[account] = tmp_acct
             else:
                 print(f'ERROR: tmp_df has {tmp_df.shape[0]} rows')
-                break
+                continue
         tmp_firm = FirmRecord(
                 Firm = ticker,
                 accounts = tmp_accts

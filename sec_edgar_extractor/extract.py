@@ -3,6 +3,7 @@ from pathlib import Path
 import pickle
 import time
 import re
+import functools
 
 import tidy
 import bs4
@@ -72,6 +73,10 @@ class Extractor():
         result_key = doc.FS_Location.name       #TODO: ('|').join(doc.FS_Location.__str__().split('/')[7:9])
         print(f'Directory: {result_key}')
 
+        hash_map_of_tables_in_pdf = {}
+        global clean_up
+        clean_up = []
+
         for acct, acct_rec in self.config[tkr].accounts.items():
             if doc.Description != acct_rec.exhibits or type(acct_rec.table_account) != str:
                 continue
@@ -79,7 +84,7 @@ class Extractor():
 
             dir = doc.FS_Location.parents[0]
             tbl_output_path = dir / 'tmp' / f'{acct}.html'
-            pdf_output_path = dir / 'tmp' / f'{acct}.pdf'
+            pdf_output_path = tbl_output_path.with_suffix('.pdf')
             acct_title = self.config[tkr].accounts[acct].table_account
             #check =  self.check_extractable_html(doc.FS_Location, tkr, acct)
             check = True                        #TODO:determine what to check
@@ -87,11 +92,16 @@ class Extractor():
             if check:
                 try:
                     selected_table = self.select_table(doc.FS_Location, tkr, acct)
-                    self.format_and_save_table(selected_table, tbl_output_path)    #previously: selected_table[0]['string']
-                    self.convert_html_to_pdf(path_html=tbl_output_path, 
-                                            path_pdf=pdf_output_path
-                                            )
-                    df = self.get_df_from_pdf(pdf_output_path)
+                    tbl_hash = hash(selected_table)
+                    if tbl_hash not in hash_map_of_tables_in_pdf.keys():
+                        self.format_and_save_table(selected_table, tbl_output_path)    #previously: selected_table[0]['string']
+                        self.convert_html_to_pdf(path_html=tbl_output_path, 
+                                                path_pdf=pdf_output_path
+                                                )
+                        hash_map_of_tables_in_pdf[tbl_hash] = pdf_output_path
+                    else:
+                        pdf_output_path = hash_map_of_tables_in_pdf[tbl_hash] 
+                    df = self.get_df_from_pdf_or_file(pdf_output_path)
                     col = self.config[tkr].accounts[acct].table_column
                     val = self.get_account_value(df, term=acct_title, column=col)    #TODO: chg to col_idx
                     rec[acct] = val
@@ -99,8 +109,9 @@ class Extractor():
                     print(f"Exception: {e}")
                     continue
             else:
-                break
+                continue
         result[result_key] = rec
+        [Path.unlink(file) for file in clean_up]
         return result
 
 
@@ -220,7 +231,7 @@ class Extractor():
                     tbls_sorted = sorted(result, key=lambda x:x[1], reverse=True)
                     return tbls_sorted[0]
 
-
+        @functools.cache
         def check_tag_and_children_for_table(tag, table_acct):
             memoize = {}  #tag and children
             current_tag = verify_table(tag, table_acct)
@@ -231,7 +242,6 @@ class Extractor():
                 return children_tag
             else:
                 return False, None, None
-
 
 
         def find_table_recurse(tag, table_acct):
@@ -290,6 +300,7 @@ class Extractor():
         soup = '<meta charset="utf-8">'+table_soup
         with open(path_html, 'w') as file:
             file.write(soup)
+        clean_up.append(path_html)
         return True
 
 
@@ -302,15 +313,25 @@ class Extractor():
             "enable-local-file-access": True
             }
         pdfkit.from_file(path_html.__str__(), path_pdf.__str__(), options=options)
+        clean_up.append(path_pdf)
         #wkhtmltopdf(url = path_html, output_file = path_pdf)
         return True
 
 
-    def get_df_from_pdf(self, path_pdf):
-        """Apply `` to get a dataframe from a pdf file containing only one table."""
-        tables = camelot.read_pdf(str(path_pdf), flavor='stream', pages='1-end', strip_text=['\n'])    #, column_tol=10)
-        df = tables[0].df
-        df_edit = df.replace({'\t': ' '}, regex=True)
+    def get_df_from_pdf_or_file(self, path_pdf):
+        """Apply `camelot` to get a dataframe from a pdf file containing only one table.
+        This will also 'cache' the dataframe to a csv, and load it, if available.
+        """
+        path_csv = path_pdf.with_suffix('.csv')
+        file = Path(path_csv)
+        if file.exists():
+            df_edit = pd.read_csv(path_csv)
+        else:
+            tables = camelot.read_pdf(str(path_pdf), flavor='stream', pages='1-end', strip_text=['\n'])    #, column_tol=10)
+            df = tables[0].df
+            df_edit = df.replace({'\t': ' '}, regex=True)
+            df_edit.to_csv(path_csv, index=False)
+            clean_up.append(path_csv)
         return df_edit
 
 
@@ -323,13 +344,13 @@ class Extractor():
         """
         def process_row_list(idx_term, offset):
             idx = idx_term[2] + offset
-            row = df.loc[idx].tolist()[1:]
+            row = [item for item in df.loc[idx].tolist()[1:] if type(item)==str]
             fixed_row = correct_row_list(row)
             return fixed_row
 
         OFFSETS= [0,1]
         def prepare_table_row(df, term):
-            lst = df.loc[:,0].to_list()
+            lst = [str(item) for item in df.iloc[:,0].to_list()]
             idx_terms = process.extract(term, lst, scorer=fuzz.WRatio, limit=display_terms)
             for offset in OFFSETS:
                 for idx_term in idx_terms:

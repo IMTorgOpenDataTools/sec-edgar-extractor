@@ -16,7 +16,7 @@ from sec_edgar_extractor import utils
 
 def test_select_table():
     path_loc = Path('./tests/data/press_release')
-    files = path_loc / 'files.json'
+    files = path_loc / 'files_save.json'
     ticker = 'TFC'                               #TODO: change to for loop 
 
     with open(files, 'r') as f:
@@ -34,10 +34,14 @@ def test_select_table():
     for account in accounts:
         selected_table =  ex.select_table(doc, firm, account)
         rec[account] = selected_table
+    print(rec)
     assert True == True
 
 
 def test_extract_process():
+    """This is the primary usage example for Extractor.
+    This test also checks output against manually-verified output.
+    """
     start_time = time.time()
     path_loc = Path('./tests/data/press_release')
     files = path_loc / 'files_save.json'
