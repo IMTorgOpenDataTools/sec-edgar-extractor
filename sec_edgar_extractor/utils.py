@@ -172,7 +172,7 @@ def load_config_account_info(file=None):
                 )
                 tmp_accts[account] = tmp_acct
             else:
-                print(f'ERROR: tmp_df has {tmp_df.shape[0]} rows')
+                #print(f'ERROR: tmp_df has {tmp_df.shape[0]} rows')
                 continue
         tmp_firm = FirmRecord(
                 Firm = ticker,

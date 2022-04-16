@@ -50,6 +50,7 @@ class Doc:
 
 class Extractor():
     """Singleton object that maintains config and functionality for extracting data from press-release documents.
+    If selected using `save_intermediate_files`, save intermediate files in a path the same name as the extracted file.
     
     TODO:ALL- html_doc can be path or the file string, by passing file string you don't have to re-read for each step of the process
     """
