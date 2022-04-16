@@ -50,7 +50,7 @@ def test_extract_process():
         string = f.read()
         data = json.loads(string)
     
-    ex = Extractor()
+    ex = Extractor(save_intermediate_files=True)
     result = []
     for k in data.keys():
         html_file = data[k]['input_file']

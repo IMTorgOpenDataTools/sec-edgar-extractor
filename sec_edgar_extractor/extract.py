@@ -54,13 +54,16 @@ class Extractor():
     TODO:ALL- html_doc can be path or the file string, by passing file string you don't have to re-read for each step of the process
     """
 
-    def __init__(self, config=None, file_path=None):
+    def __init__(self, config=None, file_path=None, save_intermediate_files=False):
         if config:
             self.config = config
         elif file_path:
             self.config = load_config_account_info(file_path)
         else:
             self.config = load_config_account_info()
+        
+        self.save_intermediate_files = save_intermediate_files
+
 
 
     def execute_extract_process(self, doc, ticker):
@@ -76,15 +79,23 @@ class Extractor():
         hash_map_of_tables_in_pdf = {}
         global clean_up
         clean_up = []
+        dir = doc.FS_Location.parents[0]
 
         for acct, acct_rec in self.config[tkr].accounts.items():
             if doc.Description != acct_rec.exhibits or type(acct_rec.table_account) != str:
                 continue
             print(f'Account: {acct}')
 
-            dir = doc.FS_Location.parents[0]
-            tbl_output_path = dir / 'tmp' / f'{acct}.html'
+            if self.save_intermediate_files:
+                itermediate_dir = doc.FS_Location.stem
+
+            else:
+                itermediate_dir = 'tmp'
+            output_path = dir / itermediate_dir 
+            output_path.mkdir(parents=True, exist_ok=True)
+            tbl_output_path = output_path / f'{acct}.html'
             pdf_output_path = tbl_output_path.with_suffix('.pdf')
+
             acct_title = self.config[tkr].accounts[acct].table_account
             #check =  self.check_extractable_html(doc.FS_Location, tkr, acct)
             check = True                        #TODO:determine what to check
@@ -111,7 +122,8 @@ class Extractor():
             else:
                 continue
         result[result_key] = rec
-        [Path.unlink(file) for file in clean_up]
+        if not self.save_intermediate_files:
+            [Path.unlink(file) for file in clean_up]
         return result
 
 
