@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 import pdfkit
-from wkhtmltopdf import wkhtmltopdf #WKHtmlToPdf
+#from wkhtmltopdf import wkhtmltopdf #WKHtmlToPdf
 import camelot
 from rapidfuzz import process, fuzz
 

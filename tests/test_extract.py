@@ -8,8 +8,8 @@ from bs4 import BeautifulSoup
 
 from sec_edgar_extractor.extract import Extractor
 from sec_edgar_extractor import utils
-from config.config import FirmRecord, AccountRecord
-
+#from sec_edgar_extractor.config import FirmRecord, AccountRecord
+from sec_edgar_extractor.config.config import FirmRecord, AccountRecord
 
 
 

@@ -31,7 +31,14 @@ Aspects that need improvement:
 
 ## Usage and Testing
 
-Some dependencies require multiple external packages.  To prepare the environment, do the following:
+Enable vscode development container to install packages using:
+
+```
+sudo apt-get update
+sudo apt-get upgrade
+```
+
+Super user may be needed to install all packages.  Some dependencies require multiple external packages.  To prepare the environment, do the following:
 
 ```
 #py3-wkhtmltopdf
