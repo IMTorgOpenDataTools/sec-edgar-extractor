@@ -114,7 +114,7 @@ class Extractor():
                     else:
                         pdf_output_path = hash_map_of_tables_in_pdf[tbl_hash] 
                     df = self.get_df_from_pdf_or_file(pdf_output_path)
-                    col = self.config[tkr].accounts[acct].table_column
+                    col = self.config[tkr].accounts[acct].table_column  
                     val = self.get_account_value(df, term=acct_title, column=col)    #TODO: chg to col_idx
                     rec[acct] = val
                 except Exception as e:
