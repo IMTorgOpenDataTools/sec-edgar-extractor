@@ -7,6 +7,7 @@ account_defaults = {
     'ALLL': {'xbrl':'FinancingReceivableAllowanceForCreditLosses','term':'allowance for loan and lease losses'},
     'PCL': {'xbrl':'ProvisionForLoanLeaseAndOtherLosses','term':'Provision for credit loss'},
     'ChargeOffs': {'xbrl':'FinancingReceivableAllowanceForCreditLossesWriteOffsNet','term':'charge-off'},
+    'TotalChargeOffs': {'xbrl':'FinancingReceivableAllowanceForCreditLossesWriteOffsNet','term':'charge-off'},
     'NetChargeOffs': {'xbrl':'FinancingReceivableAllowanceForCreditLossesWriteOffsNet','term':'charge-off'},
     'Loans': {'xbrl':'NotesReceivableGross','term':'Loan'},
     'ACLpctLoan': {'xbrl':'FinancingReceivableAllowanceForCreditLossToOutstandingPercent','term':'as percent of loans'},

@@ -98,9 +98,7 @@ class Extractor():
             pdf_output_path = tbl_output_path.with_suffix('.pdf')
 
             acct_title = self.config[tkr].accounts[acct].table_account
-            #check =  self.check_extractable_html(doc.FS_Location, tkr, acct)
-            check = True                        #TODO:determine what to check
-
+            check =  self.check_extractable_html(doc.FS_Location, tkr, acct)
             if check:
                 try:
                     selected_table = self.select_table(doc.FS_Location, tkr, acct)
@@ -159,8 +157,9 @@ class Extractor():
         # rqmt-ii)
         tables = doc.find_all('table')
         images = doc.find_all('img')
-        if len(images) > len(tables):
+        if (len(images) > len(tables)) or (len(tables)==0):
             print(f'there are more images {len(images)} than tables {len(tables)} in this document')
+            return False
 
         # rqmt-iii)
         result = []
@@ -168,7 +167,8 @@ class Extractor():
         for idx, text in enumerate(texts):
             type = 'tabular' if text.find_parent('table') else 'text'
             result.append((idx, text, type))
-        return result
+        if len(result)>0:
+            return result
 
 
 
@@ -287,8 +287,7 @@ class Extractor():
         with open(doc) as f:
             html = f.read()
             soup = BeautifulSoup(html, 'lxml')
-            possible_tags1 = soup.find_all(text=re.compile(acct.table_name))              #TODO:table_name may be broken (separated) among tags, 
-                                                                                          #TODO:maybe search by multiple terms (table, account, column)
+            possible_tags1 = soup.find_all(text=re.compile(acct.table_name))              #TODO:table_name may be broken (separated) among tags,                                                                                          #TODO:maybe search by multiple terms (table, account, column)
             possible_tags2 = [remove_unuseful_tables(tag) for tag in possible_tags1]
             possible_tags3 = process.extract(acct.table_name, possible_tags2, scorer=fuzz.WRatio, limit=3)
             tags = [tag[0] for tag in possible_tags3]

@@ -37,28 +37,44 @@ config['WFC'] = wfc
 
 
 def test_check_extractable_html():
-    html_doc = {'wfc-99.2': './tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm'}
+    html_doc = {'PNC': './tests/data/press_release/a2021_0601xrlsxpncbbvale.htm',
+                'wfc-99.2': './tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm'
+                }
+    ex = Extractor()
+
+    firm = 'PNC'
+    account = 'ACL'
+    result =  ex.check_extractable_html(html_doc[firm], firm, account)
+    assert result == False
+
     firm = 'WFC'
     account = 'ACL'
-
-    ex = Extractor(config)
     result =  ex.check_extractable_html(html_doc['wfc-99.2'], firm, account)
     tabular_vals = [rec for rec in result if rec[2] == 'tabular']
     cnt = len(tabular_vals)
-    assert cnt == 10
+    assert cnt == 3
 
 
 def test_select_table():
     """TODO: change to earlier"""
-    html_doc = [('WFC', './tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm'),
-                ('C', './tests/data/press_release/c-20211231xex99d2.htm')
-                ]
+    html_doc = {'WFC': './tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm',
+                'C': './tests/data/press_release/c-20211231xex99d2.htm'
+                }
+    ex = Extractor()
+
     firm = 'WFC'
     account = 'ACL'
+    selected_table =  ex.select_table(html_doc[firm], firm, account)
+    assert len(selected_table) == 144616
 
-    ex = Extractor(config)
-    selected_table =  ex.select_table(html_doc['wfc-99.2'], firm, account)
-    assert selected_table[0]['td_count'] == 1030
+    firm = 'C'
+    account = 'ACL'
+    selected_table =  ex.select_table(html_doc[firm], firm, account)
+    assert len(selected_table) == 279219
+
+
+
+
 
 
 def test_format_and_save_table():
