@@ -57,10 +57,16 @@ def test_check_extractable_html():
 
 def test_select_table():
     """TODO: change to earlier"""
-    html_doc = {'WFC': './tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm',
+    html_doc = {'PNC': './tests/data/press_release/q420inancialhighlightsandn.htm',
+                'WFC': './tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm',
                 'C': './tests/data/press_release/c-20211231xex99d2.htm'
                 }
     ex = Extractor()
+
+    firm = 'PNC'
+    account = 'ACL'
+    selected_table =  ex.select_table(html_doc[firm], firm, account)
+    assert len(selected_table) == 25831
 
     firm = 'WFC'
     account = 'ACL'
@@ -71,10 +77,6 @@ def test_select_table():
     account = 'ACL'
     selected_table =  ex.select_table(html_doc[firm], firm, account)
     assert len(selected_table) == 279219
-
-
-
-
 
 
 def test_format_and_save_table():
