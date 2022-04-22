@@ -77,3 +77,25 @@ def test_extract_process():
     print(f"log: execution took: {round(time.time() - start_time, 3)}sec")
     print(summary)
     assert True == True
+
+
+def test_extract_process_no_config_data():
+    """Check that a firm not in the reference file (Firm_Account_Info.csv)
+        will fail gracefully.
+    """
+    start_time = time.time()
+    path_loc = Path('./tests/data/press_release')
+
+    ex = Extractor(save_intermediate_files=False)
+
+    result = []
+    tkr = 'AXP'
+    html_file = 'no_file_here.htm'
+    desc = 'EX-99 nothing'
+    output = {'no_file_here.htm': {'ACL': 0.0}}
+
+    loc = path_loc / html_file
+    doc = Doc(Description=desc, FS_Location=loc)
+    rec = ex.execute_extract_process(doc=doc, ticker=tkr)
+
+    assert rec == {'no_file_here.htm': {}}

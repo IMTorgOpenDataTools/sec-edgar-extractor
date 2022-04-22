@@ -82,6 +82,10 @@ class Extractor():
         clean_up = []
         dir = doc.FS_Location.parents[0]
 
+        if not tkr in self.config.keys():
+            result[result_key] = {}
+            return result
+
         for acct, acct_rec in self.config[tkr].accounts.items():
             if doc.Description != acct_rec.exhibits or type(acct_rec.table_account) != str:
                 continue
