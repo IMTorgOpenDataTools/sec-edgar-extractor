@@ -101,6 +101,84 @@ def test_extract_process_test_tfc():
     assert True == True
 
 
+def test_extract_process_test_citi():
+    """Check that a firm not in the reference file (Firm_Account_Info.csv)
+        will fail gracefully.
+    """
+    start_time = time.time()
+    path_loc = Path('./tests/data/press_release')
+
+    ex = Extractor(save_intermediate_files=False)
+
+    result = []
+    tkr = 'C'
+    html_file = 'c-20210714xex99d2.htm'
+    desc = 'EX-99.2'
+    output = {'c-20210714xex99d2.htm': {'ACL': -21638.0}}
+
+    loc = path_loc / html_file
+    doc = Doc(Description=desc, FS_Location=loc)
+    rec = ex.execute_extract_process(doc=doc, ticker=tkr)
+
+    assert True == True
+
+
+def test_extract_process_test_cfg():
+    """Check that a firm not in the reference file (Firm_Account_Info.csv)
+        will fail gracefully.
+    """
+    start_time = time.time()
+    path_loc = Path('./tests/data/press_release')
+
+    ex = Extractor(save_intermediate_files=False)
+
+    result = []
+    tkr = 'CFG'
+    html_file = 'a4q21earningsrelease.htm'
+    desc = 'EX-99.1'
+    output = {'a4q21earningsrelease.htm': {'ACL': 1934.0}}
+
+    loc = path_loc / html_file
+    doc = Doc(Description=desc, FS_Location=loc)
+    rec = ex.execute_extract_process(doc=doc, ticker=tkr)
+
+    assert True == True
+
+
+def test_extract_process_test_pnc():
+    """Check that a firm not in the reference file (Firm_Account_Info.csv)
+        will fail gracefully.
+    """
+    start_time = time.time()
+    path_loc = Path('./tests/data/press_release')
+
+    ex = Extractor(save_intermediate_files=False)
+
+    result = []
+    tkr = 'PNC'
+    html_file = 'q42021financialsupplement.htm'
+    desc = 'EX-99.1'
+    output = {'q42021financialsupplement.htm': {'ACL': 5530.0}}
+
+    loc = path_loc / html_file
+    doc = Doc(Description=desc, FS_Location=loc)
+    rec = ex.execute_extract_process(doc=doc, ticker=tkr)
+    exts = ['.csv','.html','pdf']
+    [os.remove('./tests/data/press_release/tmp/ACL'+ext) for ext in exts 
+        if os.path.exists('./tests/data/press_release/tmp/ACL'+ext)]
+
+    result = []
+    tkr = 'PNC'
+    html_file = 'q12022financialhighlightsa.htm'
+    desc = 'EX-99.1'
+    output = {'q12022financialhighlightsa.htm': {'ACL': 0.0}}
+
+    loc = path_loc / html_file
+    doc = Doc(Description=desc, FS_Location=loc)
+    rec = ex.execute_extract_process(doc=doc, ticker=tkr)
+
+    assert True == True
+
 def test_extract_process_no_config_data():
     """Check that a firm not in the reference file (Firm_Account_Info.csv)
         will fail gracefully.
