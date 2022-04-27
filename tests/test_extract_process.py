@@ -79,6 +79,28 @@ def test_extract_process():
     assert True == True
 
 
+def test_extract_process_test_tfc():
+    """Check that a firm not in the reference file (Firm_Account_Info.csv)
+        will fail gracefully.
+    """
+    start_time = time.time()
+    path_loc = Path('./tests/data/press_release')
+
+    ex = Extractor(save_intermediate_files=False)
+
+    result = []
+    tkr = 'TFC'
+    html_file = 'ex992-qps4q21.htm'
+    desc = 'EX-99.2'
+    output = {'ex992-qps4q21.htm': {'ACL': 4695.0}}
+
+    loc = path_loc / html_file
+    doc = Doc(Description=desc, FS_Location=loc)
+    rec = ex.execute_extract_process(doc=doc, ticker=tkr)
+
+    assert True == True
+
+
 def test_extract_process_no_config_data():
     """Check that a firm not in the reference file (Firm_Account_Info.csv)
         will fail gracefully.

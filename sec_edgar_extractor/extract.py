@@ -167,12 +167,15 @@ class Extractor():
 
         # rqmt-iii)
         result = []
-        texts = doc.find_all(text = re.compile(discover_terms))
+        texts = doc.find_all(text = re.compile(discover_terms, re.I))
         for idx, text in enumerate(texts):
-            type = 'tabular' if text.find_parent('table') else 'text'
-            result.append((idx, text, type))
+            if len(result) == 0:
+                type = 'tabular' if text.find_parent('table') else 'text'
+                result.append((idx, text, type))
+            else:
+                break
         if len(result)>0:
-            return result
+            return True
 
 
 
