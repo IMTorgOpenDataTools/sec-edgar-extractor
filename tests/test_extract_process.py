@@ -179,6 +179,28 @@ def test_extract_process_test_pnc():
 
     assert True == True
 
+
+def test_extract_process_test_key():
+    """Check that a firm not in the reference file (Firm_Account_Info.csv)
+        will fail gracefully.
+    """
+    start_time = time.time()
+    path_loc = Path('./tests/data/press_release')
+
+    ex = Extractor(save_intermediate_files=False)
+
+    result = []
+    tkr = 'KEY'
+    html_file = 'a1q22erex993.htm'
+    desc = 'EX-99.3'
+    output = {'a1q22erex993.htm': {'ACL': -1105.0, 'Loans': 106600.0}}
+
+    loc = path_loc / html_file
+    doc = Doc(Description=desc, FS_Location=loc)
+    rec = ex.execute_extract_process(doc=doc, ticker=tkr)
+
+    assert True == True
+
 def test_extract_process_no_config_data():
     """Check that a firm not in the reference file (Firm_Account_Info.csv)
         will fail gracefully.

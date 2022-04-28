@@ -140,7 +140,7 @@ class Extractor():
 
         """
         acct = self.config[firm].accounts[account]
-        discover_terms = acct.discover_terms
+        discover_terms = acct.table_name            #acct.discover_terms
         with open(html_doc, 'r') as file:
             doc_str = file.read()
         doc = BeautifulSoup(doc_str, 'lxml')
@@ -176,6 +176,8 @@ class Extractor():
                 break
         if len(result)>0:
             return True
+        else:
+            return False
 
 
 
