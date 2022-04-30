@@ -92,13 +92,13 @@ def test_extract_process_test_tfc():
     tkr = 'TFC'
     html_file = 'ex992-qps4q21.htm'
     desc = 'EX-99.2'
-    output = {'ex992-qps4q21.htm': {'ACL': 4695.0}}
+    output = {html_file: {'ACL': 4695.0, 'Loans': 294325.0, 'ALLL':-4435.0}}
 
     loc = path_loc / html_file
     doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
-    assert True == True
+    assert rec[html_file] == output[html_file]
 
 
 def test_extract_process_test_citi():
@@ -114,13 +114,13 @@ def test_extract_process_test_citi():
     tkr = 'C'
     html_file = 'c-20211231xex99d2.htm'
     desc = 'EX-99.2'
-    output = {'c-20211231xex99d2.htm': {'ACL': -15393.0, 'Loans': 644276.0}}
+    output = {html_file: {'ACL': -16455.0, 'Loans': 651312.0}}
 
     loc = path_loc / html_file
     doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
-    assert True == True
+    assert rec[html_file] == output[html_file]
 
 
 def test_extract_process_test_cfg():
@@ -136,13 +136,13 @@ def test_extract_process_test_cfg():
     tkr = 'CFG'
     html_file = 'a4q21earningsrelease.htm'
     desc = 'EX-99.1'
-    output = {'a4q21earningsrelease.htm': {'ACL': 1934.0}}
+    output = {html_file: {'ACL': 1934.0, 'Loans': 128163.0}}
 
     loc = path_loc / html_file
     doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
-    assert True == True
+    assert rec[html_file] == output[html_file]
 
 
 def test_extract_process_test_pnc():
@@ -158,26 +158,49 @@ def test_extract_process_test_pnc():
     tkr = 'PNC'
     html_file = 'q42021financialsupplement.htm'
     desc = 'EX-99.1'
-    output = {'q42021financialsupplement.htm': {'ACL': 5530.0}}
+    output = {html_file: {'ACL': 5530.0, 'Loans': 288910.0}}
 
     loc = path_loc / html_file
     doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
+
+    assert rec[html_file] == output[html_file]
     exts = ['.csv','.html','pdf']
     [os.remove('./tests/data/press_release/tmp/ACL'+ext) for ext in exts 
         if os.path.exists('./tests/data/press_release/tmp/ACL'+ext)]
-
+    
+    # I actually don't want to extract from this document, but it works :0
     result = []
     tkr = 'PNC'
     html_file = 'q12022financialhighlightsa.htm'
     desc = 'EX-99.1'
-    output = {'q12022financialhighlightsa.htm': {'ACL': 0.0}}
+    output = {html_file: {'ACL': 5197.0, 'Loans': 294457.0}}
 
     loc = path_loc / html_file
     doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
-    assert True == True
+    assert rec[html_file] == output[html_file]
+    [os.remove('./tests/data/press_release/tmp/ACL'+ext) for ext in exts 
+        if os.path.exists('./tests/data/press_release/tmp/ACL'+ext)]
+
+    # this failed during use
+    result = []
+    tkr = 'PNC'
+    html_file = 'q22021financialhighlightsa.htm'
+    desc = 'EX-99.1'
+    output = {html_file: {'ACL': 5730.0, 'Loans': 294704.0}}
+
+    loc = path_loc / html_file
+    doc = Doc(Type=desc, FS_Location=loc)
+    rec = ex.execute_extract_process(doc=doc, ticker=tkr)
+
+    assert rec[html_file] == output[html_file]
+    [os.remove('./tests/data/press_release/tmp/ACL'+ext) for ext in exts 
+        if os.path.exists('./tests/data/press_release/tmp/ACL'+ext)]
+
+
+
 
 
 def test_extract_process_test_key():
@@ -193,13 +216,13 @@ def test_extract_process_test_key():
     tkr = 'KEY'
     html_file = 'a1q22erex993.htm'
     desc = 'EX-99.3'
-    output = {'a1q22erex993.htm': {'ACL': -1105.0, 'Loans': 106600.0}}
+    output = {html_file: {'ACL': -1105.0, 'Loans': 106600.0}}
 
     loc = path_loc / html_file
     doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
-    assert True == True
+    assert rec[html_file] == output[html_file]
 
 
 def test_extract_process_test_ms():
@@ -220,7 +243,7 @@ def test_extract_process_test_ms():
     loc = path_loc / html_file
     doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
-    
+
     assert rec[html_file] == output[html_file]
 
 
@@ -235,15 +258,15 @@ def test_extract_process_test_wfc():
 
     result = []
     tkr = 'WFC'
-    html_file = 'q12022financialsupplement.htm'
+    html_file = 'wfc4qer01-14x22ex992xsuppl.htm'
     desc = 'EX-99.2'
-    output = {'q12022financialsupplement.htm': {'ACL': 5197.0, 'Loans': 'Amount'}}
+    output = {html_file: {'ACL': 13788.0, 'Loans': 895394.0}}
 
     loc = path_loc / html_file
     doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
-    assert True == True
+    assert rec[html_file] == output[html_file]
 
 
 def test_extract_process_no_config_data():
@@ -259,10 +282,10 @@ def test_extract_process_no_config_data():
     tkr = 'AXP'
     html_file = 'no_file_here.htm'
     desc = 'EX-99 nothing'
-    output = {'no_file_here.htm': {'ACL': 0.0}}
+    output = {html_file: {}}
 
     loc = path_loc / html_file
     doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
-    assert rec == {'no_file_here.htm': {}}
+    assert rec[html_file] == output[html_file]

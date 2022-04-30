@@ -385,7 +385,7 @@ class Extractor():
         if file.exists():
             df_edit = pd.read_csv(path_csv)
         else:
-            tables = camelot.read_pdf(str(path_pdf), flavor='stream', pages='1-end', strip_text=['\n'], edge_tol=10)    #, column_tol=10, edge_tol=10)
+            tables = camelot.read_pdf(str(path_pdf), flavor='stream', pages='1-end', strip_text=['\n'], edge_tol=100)    #, column_tol=10, edge_tol=10)
             df = tables[0].df
             df_edit = df.replace({'\t': ' '}, regex=True)
             df_edit.to_csv(path_csv, index=False)
