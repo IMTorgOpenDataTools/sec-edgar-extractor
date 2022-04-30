@@ -117,7 +117,7 @@ def test_single_record_process():
     rows = df.shape[0]
 
     shutil.rmtree(tmp_out, ignore_errors=True)
-    val = ex.get_account_value(df, term=firm_title)
+    val = ex.get_account_row(df, term=firm_title)
     flt = utils.robust_str_to_float(val)
     assert flt == 13788.0
 

@@ -42,8 +42,8 @@ config_template = [
 
 class Doc:
     """Interface for the DocumentMetadata namedTuple."""
-    def __init__(self, Description, FS_Location):
-        self.Description = Description
+    def __init__(self, Type, FS_Location):
+        self.Type = Type
         self.FS_Location = Path(FS_Location)
 
 
@@ -87,7 +87,7 @@ class Extractor():
             return result
 
         for acct, acct_rec in self.config[tkr].accounts.items():
-            if doc.Description != acct_rec.exhibits or type(acct_rec.table_account) != str:
+            if doc.Type != acct_rec.exhibits or type(acct_rec.table_account) != str:
                 continue
             print(f'Account: {acct}')
 
@@ -102,7 +102,8 @@ class Extractor():
             pdf_output_path = tbl_output_path.with_suffix('.pdf')
 
             acct_title = self.config[tkr].accounts[acct].table_account
-            check =  self.check_extractable_html(doc.FS_Location, tkr, acct)
+            #check =  self.check_extractable_html(doc.FS_Location, tkr, acct)
+            check = True
             if check:
                 try:
                     selected_table = self.select_table(doc.FS_Location, tkr, acct)
@@ -117,7 +118,8 @@ class Extractor():
                         pdf_output_path = hash_map_of_tables_in_pdf[tbl_hash] 
                     df = self.get_df_from_pdf_or_file(pdf_output_path)
                     col = self.config[tkr].accounts[acct].table_column  
-                    val = self.get_account_value(df, term=acct_title, column=col)    #TODO: chg to col_idx
+                    fixed_row = self.get_account_row(df, term=acct_title)    #TODO: chg to col_idx
+                    val = take_val_from_column(fixed_row, col)
                     rec[acct] = val
                 except Exception as e:
                     print(f"Exception: {e}")
@@ -288,6 +290,43 @@ class Extractor():
                 print('Maximum recursion limit reached')
 
 
+        def progressive_text_search(term):
+            """
+            Progressively more general search for text:
+            i) exact NavigableString
+            ii) subtext within text
+            iii) text broken or separated among tags (ie <div>Table</div><div>Name<div>)
+            """
+            nested = acct.table_name.split()
+            terms = [term, re.compile(re.escape(term)), nested]
+            result = []
+            for term in terms:
+                if type(term) != list:
+                    possible_tags1 = soup.find_all(text=term)                                                                                                        #TODO:maybe search by multiple terms (table, account, column)
+                    possible_tags2 = [remove_unuseful_tables(tag) for tag in possible_tags1]
+                    possible_tags3 = process.extract(acct.table_name, possible_tags2, scorer=fuzz.WRatio, limit=3)
+                    tags = [tag[0] for tag in possible_tags3]
+                else:
+                    nested_items = [soup.find_all(text=re.compile(sub_text)) for sub_text in term]
+                    [table_lst.extend(item) for item in nested_items if item != [] ]
+                    tags = list(set(table_lst))
+                if len(tags) > 0:
+                    return tags
+
+        def nested_loops(tags_table_name, tags_account):
+            """Nested loops which use a return to break"""
+            for tbl_name in tags_table_name:
+                 for tbl_name_parent in tbl_name.parents:
+                     for account in tags_account:
+                         for account_parent in account.parents:
+                             if hasattr(tbl_name_parent, 'name') and hasattr(account_parent, 'name'):
+                                 if tbl_name_parent.name == 'table' and account_parent.name == 'table':
+                                     if tbl_name_parent == account_parent:
+                                         selected_tables.append( tbl_name_parent )
+                                         return True
+            return False
+
+
 
         start_time = time.time()
         acct = self.config[firm].accounts[account]
@@ -295,20 +334,18 @@ class Extractor():
         selected_tables = []
         with open(doc) as f:
             html = f.read()
-            soup = BeautifulSoup(html, 'lxml')
-            possible_tags1 = soup.find_all(text=re.compile(acct.table_name))              #TODO:table_name may be broken (separated) among tags,                                                                                          #TODO:maybe search by multiple terms (table, account, column)
-            possible_tags2 = [remove_unuseful_tables(tag) for tag in possible_tags1]
-            possible_tags3 = process.extract(acct.table_name, possible_tags2, scorer=fuzz.WRatio, limit=3)
-            tags = [tag[0] for tag in possible_tags3]
-            if tags == []:
-                names = acct.table_name.split()
-                nested_items = [soup.find_all(text=re.compile(name)) for name in names]
-                [table_lst.extend(item) for item in nested_items if item != [] ]
-                tags = list(set(table_lst))
-            for tag in tags:
-                tbl = find_table_recurse(tag, acct.table_account)
-                if tbl[0]:
-                    selected_tables.append(tbl[2])
+            soup = BeautifulSoup(html, 'html.parser')    #only this parser has access to Tag.sourceline, Tag.sourcepos (if needed)
+            # find tags
+            tags_table_name = progressive_text_search( acct.table_name )
+            tags_account = progressive_text_search( acct.table_account )
+            # find table by using parents of both table_name and account
+            rtn = nested_loops(tags_table_name, tags_account)
+            # find the table recursively, as a last resort (its slow)
+            if rtn == False and len(selected_tables) == 0:
+                for tag in tags_table_name:
+                    tbl = find_table_recurse(tag, acct.table_account)
+                    if tbl[0]:
+                        selected_tables.append(tbl[2])
 
         unique_tables = list(set(selected_tables))
         print(len(unique_tables))
@@ -348,7 +385,7 @@ class Extractor():
         if file.exists():
             df_edit = pd.read_csv(path_csv)
         else:
-            tables = camelot.read_pdf(str(path_pdf), flavor='stream', pages='1-end', strip_text=['\n'])    #, column_tol=10)
+            tables = camelot.read_pdf(str(path_pdf), flavor='stream', pages='1-end', strip_text=['\n'], edge_tol=10)    #, column_tol=10, edge_tol=10)
             df = tables[0].df
             df_edit = df.replace({'\t': ' '}, regex=True)
             df_edit.to_csv(path_csv, index=False)
@@ -356,7 +393,7 @@ class Extractor():
         return df_edit
 
 
-    def get_account_value(self, df, column, term='Total allowance for credit losses', display_terms=2, index_term=0):
+    def get_account_row(self, df, term='Total allowance for credit losses', display_terms=2, index_term=0):
         """Given a dataframe and target context, extract the specific account value.
         TODO: add index column that has '/' to denote carriage return
         TODO:what about acct.title with multiple lines
@@ -379,6 +416,5 @@ class Extractor():
                     if fixed_row != []:
                         return fixed_row
         
-        fixed_row = prepare_table_row(df, term)
-        val = take_val_from_column(fixed_row, column)    
-        return val
+        fixed_row = prepare_table_row(df, term)    
+        return fixed_row

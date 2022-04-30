@@ -58,7 +58,7 @@ def test_extract_process():
         output = data[k]['output']
 
         loc = path_loc / html_file
-        doc = Doc(Description=desc, FS_Location=loc)
+        doc = Doc(Type=desc, FS_Location=loc)
         rec = ex.execute_extract_process(doc=doc, ticker=k)
         print(rec)
         f = html_file
@@ -95,7 +95,7 @@ def test_extract_process_test_tfc():
     output = {'ex992-qps4q21.htm': {'ACL': 4695.0}}
 
     loc = path_loc / html_file
-    doc = Doc(Description=desc, FS_Location=loc)
+    doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
     assert True == True
@@ -112,12 +112,12 @@ def test_extract_process_test_citi():
 
     result = []
     tkr = 'C'
-    html_file = 'c-20210714xex99d2.htm'
+    html_file = 'c-20211231xex99d2.htm'
     desc = 'EX-99.2'
-    output = {'c-20210714xex99d2.htm': {'ACL': -21638.0}}
+    output = {'c-20211231xex99d2.htm': {'ACL': -15393.0, 'Loans': 644276.0}}
 
     loc = path_loc / html_file
-    doc = Doc(Description=desc, FS_Location=loc)
+    doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
     assert True == True
@@ -139,7 +139,7 @@ def test_extract_process_test_cfg():
     output = {'a4q21earningsrelease.htm': {'ACL': 1934.0}}
 
     loc = path_loc / html_file
-    doc = Doc(Description=desc, FS_Location=loc)
+    doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
     assert True == True
@@ -161,7 +161,7 @@ def test_extract_process_test_pnc():
     output = {'q42021financialsupplement.htm': {'ACL': 5530.0}}
 
     loc = path_loc / html_file
-    doc = Doc(Description=desc, FS_Location=loc)
+    doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
     exts = ['.csv','.html','pdf']
     [os.remove('./tests/data/press_release/tmp/ACL'+ext) for ext in exts 
@@ -174,7 +174,7 @@ def test_extract_process_test_pnc():
     output = {'q12022financialhighlightsa.htm': {'ACL': 0.0}}
 
     loc = path_loc / html_file
-    doc = Doc(Description=desc, FS_Location=loc)
+    doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
     assert True == True
@@ -196,10 +196,55 @@ def test_extract_process_test_key():
     output = {'a1q22erex993.htm': {'ACL': -1105.0, 'Loans': 106600.0}}
 
     loc = path_loc / html_file
-    doc = Doc(Description=desc, FS_Location=loc)
+    doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
     assert True == True
+
+
+def test_extract_process_test_ms():
+    """Check that a firm not in the reference file (Firm_Account_Info.csv)
+        will fail gracefully.
+    """
+    start_time = time.time()
+    path_loc = Path('./tests/data/press_release')
+
+    ex = Extractor(save_intermediate_files=False)
+
+    result = []
+    tkr = 'MS'
+    html_file = 'a52683164ex99_2.htm'
+    desc = 'EX-99.2'
+    output = {html_file: {'ACL': 679.0, 'Loans': 209067.0}}
+
+    loc = path_loc / html_file
+    doc = Doc(Type=desc, FS_Location=loc)
+    rec = ex.execute_extract_process(doc=doc, ticker=tkr)
+    
+    assert rec[html_file] == output[html_file]
+
+
+def test_extract_process_test_wfc():
+    """Check that a firm not in the reference file (Firm_Account_Info.csv)
+        will fail gracefully.
+    """
+    start_time = time.time()
+    path_loc = Path('./tests/data/press_release')
+
+    ex = Extractor(save_intermediate_files=False)
+
+    result = []
+    tkr = 'WFC'
+    html_file = 'q12022financialsupplement.htm'
+    desc = 'EX-99.2'
+    output = {'q12022financialsupplement.htm': {'ACL': 5197.0, 'Loans': 'Amount'}}
+
+    loc = path_loc / html_file
+    doc = Doc(Type=desc, FS_Location=loc)
+    rec = ex.execute_extract_process(doc=doc, ticker=tkr)
+
+    assert True == True
+
 
 def test_extract_process_no_config_data():
     """Check that a firm not in the reference file (Firm_Account_Info.csv)
@@ -217,7 +262,7 @@ def test_extract_process_no_config_data():
     output = {'no_file_here.htm': {'ACL': 0.0}}
 
     loc = path_loc / html_file
-    doc = Doc(Description=desc, FS_Location=loc)
+    doc = Doc(Type=desc, FS_Location=loc)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
     assert rec == {'no_file_here.htm': {}}
