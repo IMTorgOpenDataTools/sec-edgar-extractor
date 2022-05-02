@@ -347,10 +347,10 @@ class Extractor():
                     if tbl[0]:
                         selected_tables.append(tbl[2])
 
-        unique_tables = list(set(selected_tables))
-        print(len(unique_tables))
+        list_of_tuple = [(i,selected_tables.count(i)) for i in selected_tables]
+        list_of_tuple.sort(reverse=True, key=lambda x: x[1])
         print(f"log: execution took: {round(time.time() - start_time, 3)}sec")
-        return unique_tables[0].__str__()
+        return list_of_tuple[0][0].__str__()
 
 
     def format_and_save_table(self, table_soup, path_html):
