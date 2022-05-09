@@ -59,13 +59,13 @@ def test_get_quarterly_value():
         }
 
     dir = './tests/data/instance_doc'
-    file_instance = 'pnc-20220331_htm.xml'
+    file_instance =  'pnc-20211231_htm.xml'                       #'pnc-20220331_htm.xml'
     file_path_instance = Path(dir) / file_instance
     with open(file_path_instance, 'r') as f:
         file_htm_xml = f.read()
 
     inst_doc = instance_doc.Instance_Doc()
-    df_combine = inst_doc.create_xbrl_dataframe(file_htm_xml)
+    df_doc, df_combine = inst_doc.create_xbrl_dataframe(file_htm_xml)
     selection = df_combine[(df_combine['concept']==xbrl_rqmt['xbrl_concept']) 
                             & (df_combine['dimension']==xbrl_rqmt['dimension']) 
                             & (df_combine['value_context']==xbrl_rqmt['value_context'])

@@ -77,9 +77,15 @@ class Instance_Doc:
         """
         soup = bs4.BeautifulSoup(file_xml, 'xml')
         tags = soup.find_all(re.compile(".*"))
+        dei_xbrl = []
         gaap_xbrl = []
         context_dims = []
         tables = []
+
+        #us-gaap, ifrs-full, dei, or srt
+        def cond(tag):
+            return True if tag.prefix == 'dei' else False
+        tags_document = [tag for tag in tags if cond(tag)]
 
         def cond(tag): 
             return True if tag.prefix == 'us-gaap' and tag.get('contextRef') and len(tag.text) < 200 else False
@@ -92,6 +98,12 @@ class Instance_Doc:
         #def cond(tag):
         #    return True if tag.prefix == 'us-gaap' and 'TextBlock' in tag.name and 'table' in tag.text else False
         #tags_tables = [tag for tag in tags if cond(tag)]
+        for tag in tags_document:
+            rec = {
+                'name': tag.name,
+                'value': tag.text
+                }
+            dei_xbrl.append(rec)
 
         for tag in tags_xbrl:
             rec = {
@@ -136,12 +148,13 @@ class Instance_Doc:
                 context_dims.append(rec)
 
 
+        df_doc = pd.DataFrame(dei_xbrl)
         df_xbrl = pd.DataFrame(gaap_xbrl)
         df_dim = pd.DataFrame(context_dims)
         df_combine = df_xbrl.merge(df_dim, left_on='contextRef', right_on='id', how='outer', suffixes=['_concept', '_context'])
         df_combine['start'] = pd.to_datetime(df_combine['start'], format='%Y-%m-%d')
         df_combine['end'] = pd.to_datetime(df_combine['end'], format='%Y-%m-%d')
-        return df_combine
+        return df_doc, df_combine
 
 
 
