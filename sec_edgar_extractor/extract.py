@@ -291,15 +291,14 @@ class Extractor():
 
 
         def progressive_text_search(term):
-            """
-            Progressively more general search for text:
+            """Progressively more general search for text:
             i) exact NavigableString
             ii) subtext within text
             iii) text broken or separated among tags (ie <div>Table</div><div>Name<div>)
             """
             nested = acct.table_name.split()
             terms = [term, re.compile(re.escape(term)), nested]
-            result = []
+            tags = []
             for term in terms:
                 if type(term) != list:
                     possible_tags1 = soup.find_all(text=term)                                                                                                        #TODO:maybe search by multiple terms (table, account, column)
@@ -314,7 +313,7 @@ class Extractor():
                     return tags
 
         def nested_loops(tags_table_name, tags_account):
-            """Nested loops which use a return to break"""
+            """Nested loops which use a return to break-out."""
             for tbl_name in tags_table_name:
                  for tbl_name_parent in tbl_name.parents:
                      for account in tags_account:

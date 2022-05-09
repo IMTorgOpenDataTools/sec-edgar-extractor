@@ -15,6 +15,15 @@ class Instance_Doc:
         pass
 
 
+    def get_quarterly_value(self, df, xbrl_concept):
+        """Given the InstanceDoc dataframe and the required xbrl_concept, 
+        return the value associated information.
+
+        TODO: implement this later
+        """
+        return None
+
+
     def get_account_table_position(self, soup, xbrl_concept_id):
         """Given bs4-ingested iXBRL (10-K/-Q), obtain the table position (row/col) 
         of the xbrl concept.
@@ -130,6 +139,8 @@ class Instance_Doc:
         df_xbrl = pd.DataFrame(gaap_xbrl)
         df_dim = pd.DataFrame(context_dims)
         df_combine = df_xbrl.merge(df_dim, left_on='contextRef', right_on='id', how='outer', suffixes=['_concept', '_context'])
+        df_combine['start'] = pd.to_datetime(df_combine['start'], format='%Y-%m-%d')
+        df_combine['end'] = pd.to_datetime(df_combine['end'], format='%Y-%m-%d')
         return df_combine
 
 
@@ -137,8 +148,8 @@ class Instance_Doc:
     def combine_all_tags_in_dataframe(self, file_path_instance, file_path_ixbrl):
         """
 
-        # The only way to map xbrl to the account title is using the value as the unique key (weak assumption)
-        # The correct way is to get the iXBRL file, and `ix:nonfraction` tag for target value, then match that id with <us-gaap:[CONCEPT] tag using `df_xbrl` 
+        The only way to map xbrl to the account title is using the value as the unique key (weak assumption)
+        The correct way is to get the iXBRL file, and `ix:nonfraction` tag for target value, then match that id with <us-gaap:[CONCEPT] tag using `df_xbrl` 
 
         """
         with open(file_path_instance, 'r') as f:
@@ -165,8 +176,11 @@ class Instance_Doc:
         * get previous 8k row indexed by account title and containing the current 10k/q value
         * get row's position in table, and table in document
 
+        Usage: 
+        xbrl_concept = 'us-gaap:FinancingReceivableAllowanceForCreditLosses'
+        ...
         """
-        #xbrl_concept = 'us-gaap:FinancingReceivableAllowanceForCreditLosses'
+        
         with open(file_path_instance, 'r') as f:
             file_htm_xml = f.read()
         with open(file_path_ixbrl, 'r') as f:
