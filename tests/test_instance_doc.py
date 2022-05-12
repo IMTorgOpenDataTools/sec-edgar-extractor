@@ -59,7 +59,7 @@ def test_get_quarterly_value():
         }
 
     dir = './tests/data/instance_doc'
-    file_instance =  'pnc-20211231_htm.xml'                       #'pnc-20220331_htm.xml'
+    file_instance =  'pnc-20201231_htm.xml'                       #'pnc-20220331_htm.xml'
     file_path_instance = Path(dir) / file_instance
     with open(file_path_instance, 'r') as f:
         file_htm_xml = f.read()

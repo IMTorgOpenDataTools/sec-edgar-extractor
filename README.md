@@ -1,5 +1,16 @@
 # SEC EDGAR Extract
 
+This module provides functionality to perform the following:
+
+* create configuration from firm's 10-K/-Q Instance Document (`xxx_htm.xml`) and associated 8-K
+* parse and load xbrl documentation from us-gaap taxonomy, `us-gaap-doc-2022.xml`, [sec site](https://www.sec.gov/info/edgar/edgartaxonomies.shtml)
+* extract specific account topic values from filings:
+  - 10-K/-Q, from instance document
+  - 8-K, from html-formatted exhibit
+
+
+## Earnings Extraction Workflow
+
 Extract information from SEC EDGAR filings.
 
 Given the Filing with multiple exhibit documents:
@@ -15,18 +26,16 @@ Given the Filing with multiple exhibit documents:
 * get target value from df
 
 
-## Functionality
+## TODO
 
 Aspects that need improvement:
 
-* find documents that contain information: `search_docs_for_terms()` => unique_docs
-* find the correct table in the document:
-  - use table_id, make useful modifications (style), then save table to .pdf 
-  - configuration with repeatable .pdf page number
-  - process to get table_lst / new_lst
-* parse table: cv and rules to get df
-* query table: get account value
-
+* automated creation of configuration file
+* Exception: 'NoneType' object is not iterable
+* 10+sec execution: bac
+* bac Loans
+* confidence
+* wksheet-2 definitions (website, gaap taxonomy .xml)
 
 
 ## Usage and Testing

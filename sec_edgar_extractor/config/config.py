@@ -15,6 +15,7 @@ account_defaults = {
     'ALLLpctLHFI': {'xbrl':'FinancingReceivableAllowanceForCreditLossToOutstandingPercent','term':'as percent of LHFI'}
 }
 
+
 AccountRecord = namedtuple(
     "AccountRecord",
     [   'name',
@@ -39,7 +40,7 @@ FirmRecord = namedtuple(
 
 
 
-
+"""
 firms_8k = [
     {
     'cik': 72971,
@@ -88,3 +89,4 @@ firms_8k = [
     }
     },
 ]
+"""
