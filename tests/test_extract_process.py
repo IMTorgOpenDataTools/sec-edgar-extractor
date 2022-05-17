@@ -101,6 +101,28 @@ def test_extract_process_test_ally():
     assert rec[html_file] == output[html_file]
 
 
+def test_extract_process_test_bac():
+    """Both the table_name and the account are each enclosed by a separate table, 
+    so the nested_loops approach will not work.
+    """
+    start_time = time.time()
+    path_loc = Path('./tests/data/press_release')
+
+    ex = Extractor(save_intermediate_files=False)
+
+    result = []
+    tkr = 'BAC'
+    html_file = 'bac-12312021ex993.htm'
+    desc = 'EX-99.3'
+    output = {html_file: {'ACL': -3267.0, 'Loans': 119001.0}}
+
+    loc = path_loc / html_file
+    doc = Doc(Type=desc, FS_Location=loc)
+    rec = ex.execute_extract_process(doc=doc, ticker=tkr)
+
+    assert rec[html_file] == output[html_file]
+
+
 def test_extract_process_test_tfc():
     """Check that a firm not in the reference file (Firm_Account_Info.csv)
         will fail gracefully.
