@@ -101,6 +101,28 @@ def test_extract_process_test_ally():
     assert rec[html_file] == output[html_file]
 
 
+def test_extract_process_test_jpm():
+    """Both the table_name and the account are each enclosed by a separate table, 
+    so the nested_loops approach will not work.
+    """
+    start_time = time.time()
+    path_loc = Path('./tests/data/press_release')
+
+    ex = Extractor(save_intermediate_files=False)
+
+    result = []
+    tkr = 'JPM'
+    html_file = 'a2q21erfex992supplement.htm'
+    desc = 'EX-99.2'
+    output = {html_file: {'ACL': 19500.0, 'Loans': 1040954.0}}
+
+    loc = path_loc / html_file
+    doc = Doc(Type=desc, FS_Location=loc)
+    rec = ex.execute_extract_process(doc=doc, ticker=tkr)
+
+    assert rec[html_file] == output[html_file]
+
+
 def test_extract_process_test_bac():
     """Both the table_name and the account are each enclosed by a separate table, 
     so the nested_loops approach will not work.

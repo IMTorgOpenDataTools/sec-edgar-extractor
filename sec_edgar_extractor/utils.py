@@ -153,7 +153,7 @@ def load_config_account_info(file=None):
         return rec[key] if math.isnan(rec[key]) == False else defaults[acct]['term']
 
     if file==None:
-        file = Path(__file__).parent / 'config/Firm_Account_Info.csv'
+        file = Path(__file__).absolute().parent / 'config/Firm_Account_Info.csv'
     df = pd.read_csv(file, na_values=['NA',''])
     tickers = df['ticker'].value_counts().index
     accounts = df['name'].value_counts().index
