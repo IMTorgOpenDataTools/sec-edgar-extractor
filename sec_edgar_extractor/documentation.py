@@ -1,3 +1,11 @@
+"""
+Load documentation from us-gaap taxonomy into index-able structures.
+"""
+__author__ = "Jason Beach"
+__version__ = "0.1.0"
+__license__ = "MIT"
+
+
 from pathlib import Path
 import re
 from tabnanny import check

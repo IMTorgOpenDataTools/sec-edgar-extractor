@@ -1,3 +1,11 @@
+"""
+Extractor class maintaining functionality for info extraction from SEC 8-K Press Release.
+"""
+__author__ = "Jason Beach"
+__version__ = "0.1.0"
+__license__ = "MIT"
+
+
 import sys
 from pathlib import Path
 import pickle

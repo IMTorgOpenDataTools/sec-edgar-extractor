@@ -1,3 +1,10 @@
+"""
+Parse SEC 8-K Earnings Release Instance Document for extractable information.
+"""
+__author__ = "Jason Beach"
+__version__ = "0.1.0"
+__license__ = "MIT"
+
 from pathlib import Path
 import re
 from tabnanny import check

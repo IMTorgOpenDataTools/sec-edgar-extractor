@@ -38,7 +38,9 @@ Aspects that need improvement:
 * wksheet-2 definitions (website, gaap taxonomy .xml)
 
 
-## Usage and Testing
+## Installation and Testing
+
+### Applications
 
 Enable vscode development container to install packages using:
 
@@ -51,14 +53,34 @@ Super user may be needed to install all packages.  Some dependencies require mul
 
 ```
 #py3-wkhtmltopdf
-apt-get install xvfb
-apt-get install xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic
-apt-get install wkhtmltopdf
+sudo apt-get install xvfb
+sudo apt-get install xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic
+sudo apt-get install wkhtmltopdf
 #camelot
 pipenv install opencv-python
 #uTidylib
-apt-get install libtidy-dev
+sudo apt-get install libtidy-dev
 ```
+
+
+### Configuration
+
+Some key artifacts are necessary to run the extractor.
+
+* Firm Account Info
+  - located at `sec_edgar_extractor/config/Firm_Account_Info.csv`
+  - mapping of account topic to financial table presentation title (each firm) and XBRL Label
+  - manually created currently
+  - will be deprecated for an automated creation - TODO
+* US GAAP Taxonomy
+  - located at: `sec_edgar_extractor/config/us-gaap-doc-2022.xml` (codification) and `sec_edgar_extractor/config/us-gaap-ref-2022.xml` (description)
+  - provides for all labels and associated definitions
+  - download from [url](https://www.sec.gov/info/edgar/edgartaxonomies.shtml) for Operating Companies, go to table row Taxonomy Packages: `https://xbrl.fasb.org/us-gaap/2022/us-gaap-2022.zip`
+  - unzip the file and review the `elts/` directory
+
+
+
+### Unit testing
 
 Use `pytest --collect-only` to check dependencies
 

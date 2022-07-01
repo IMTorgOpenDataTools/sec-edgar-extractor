@@ -1,3 +1,10 @@
+"""
+Utility functions for all extraction processes.
+"""
+__author__ = "Jason Beach"
+__version__ = "0.1.0"
+__license__ = "MIT"
+
 import os
 from pathlib import Path
 import subprocess
@@ -140,6 +147,7 @@ def correct_row_list(row_list):
     float_row = [robust_str_to_float(item) for item in  separated_row ]
     nonempty_float_row = [item for item in float_row if item!=None]
     return nonempty_float_row
+
 
 
 def load_config_account_info(file=None):
