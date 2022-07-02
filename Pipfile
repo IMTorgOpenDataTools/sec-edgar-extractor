@@ -9,12 +9,12 @@ bs4 = "*"
 wkhtmltopdf = "*"
 utidylib = "*"
 rapidfuzz = "*"
-pytest = "*"
 py3-wkhtmltopdf = "*"
 pdfkit = "*"
 opencv-python = "*"
 lxml = "*"
 matplotlib = "*"
+pytest = "*"
 
 [dev-packages]
 

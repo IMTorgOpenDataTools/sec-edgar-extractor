@@ -14,4 +14,4 @@ from sec_edgar_extractor.utils import (
 
 def test_load_config_account_info():
     config = load_config_account_info()
-    assert len(config) == 9
+    assert len(config) == 17

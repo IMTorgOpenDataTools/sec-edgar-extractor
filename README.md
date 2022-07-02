@@ -46,7 +46,7 @@ Enable vscode development container to install packages using:
 
 ```
 sudo apt-get update
-sudo apt-get upgrade
+sudo apt-get upgrade -Y
 ```
 
 Super user may be needed to install all packages.  Some dependencies require multiple external packages.  To prepare the environment, do the following:
@@ -56,10 +56,10 @@ Super user may be needed to install all packages.  Some dependencies require mul
 sudo apt-get install xvfb
 sudo apt-get install xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic
 sudo apt-get install wkhtmltopdf
-#camelot
-pipenv install opencv-python
 #uTidylib
 sudo apt-get install libtidy-dev
+#camelot
+pipenv install opencv-python
 ```
 
 
