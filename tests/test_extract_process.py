@@ -41,8 +41,8 @@ files = path_loc / 'press_release_index.json'
 with open(files, 'r') as f:
     string = f.read()
     index = json.loads(string)
-config = utils.load_config_account_info()
-ex = Extractor(config)
+ex = Extractor()
+config = ex.config.get()
 
 recs = []
 tickers = list(index.keys())

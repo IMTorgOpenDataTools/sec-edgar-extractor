@@ -153,58 +153,6 @@ def correct_row_list(row_list):
     return nonempty_float_row
 
 
-
-def load_config_account_info(file=None):
-    """"Load all account_info and return config(uration) dict.
-
-    TODO:add more defaults 
-    """
-    def get_default_if_missing(rec, key):
-        defaults = account_defaults
-        acct = account
-        return rec[key] if math.isnan(rec[key]) == False else defaults[acct]['term']
-
-    if file==None:
-        file = Path(__file__).absolute().parent / 'config/Firm_Account_Info.csv'
-    df_raw = pd.read_csv(file, na_values=['NA',''])
-    df = df_raw[(df_raw['table_name'].isna() == False)
-                & (df_raw['table_title'].isna() == False)
-                ]
-    tickers = df['ticker'].value_counts().index
-    accounts = df['name'].value_counts().index
-    config = {}
-
-    for ticker in tickers:
-        tmp_accts = {}
-        for account in accounts:
-            tmp_df = df[(df['ticker']== ticker) & (df['name']==account)]
-            if tmp_df.shape[0] == 1:
-                tmp_rec = tmp_df.to_dict('records')[0]
-                tmp_acct = AccountRecord(                                
-                    name = tmp_rec['name'],
-                    xbrl = tmp_rec['xbrl'],
-                    table_name = tmp_rec['table_name'],
-                    table_account = tmp_rec['table_title'],
-                    table_column = tmp_rec['col_idx'],
-                    scale = tmp_rec['scale'],
-                    discover_terms = get_default_if_missing(rec=tmp_rec, key='discover_terms'),
-                    search_terms = get_default_if_missing(rec=tmp_rec, key='search_terms'),
-                    exhibits = tmp_rec['exhibits']
-                )
-                tmp_accts[account] = tmp_acct
-            else:
-                #print(f'ERROR: tmp_df has {tmp_df.shape[0]} rows')
-                continue
-        tmp_firm = FirmRecord(
-                Firm = ticker,
-                accounts = tmp_accts
-                )
-        config[ticker] = tmp_firm
-
-    return config
-
-
-
 def load_documents(documents):
     """Load all staged documents into memory."""
     return_list = []
@@ -213,3 +161,89 @@ def load_documents(documents):
         soup = BeautifulSoup(txt, 'lxml')
         return_list.append(soup)
     return return_list
+
+
+
+class Config():
+    """Config(uration) file for maintaining Firm_Account_Info.csv file
+    in Extractor class. 
+    
+    """
+
+    def __init__(self, file=None, firm_records=None):
+        self.file = file
+        self.firm_records = firm_records
+        self.dict_records = None
+
+        if file==None and firm_records==None:
+            self.file = Path(__file__).absolute().parent / 'config/Firm_Account_Info.csv'
+        elif firm_records==None:
+            self.file = Path(file)
+        else:
+            pass
+
+
+    def load_config_account_info(self):
+        """"Load all account_info as dict('records') in Config.
+        """
+        #support
+        def get_default_if_missing(rec, key):
+            defaults = account_defaults
+            acct = account
+            return rec[key] if math.isnan(rec[key]) == False else defaults[acct]['term']
+
+        if self.file != None:
+            #df records
+            df_raw = pd.read_csv(self.file, na_values=['NA',''])
+            df = df_raw[(df_raw['table_name'].isna() == False)
+                        & (df_raw['table_title'].isna() == False)
+                        ]
+            self.dict_records = df.to_dict('records')
+
+            #dicts
+            tickers = df['ticker'].value_counts().index
+            accounts = df['name'].value_counts().index
+            config = {}
+            for ticker in tickers:
+                tmp_accts = {}
+                for account in accounts:
+                    tmp_df = df[(df['ticker']== ticker) & (df['name']==account)]
+                    if tmp_df.shape[0] == 1:
+                        tmp_rec = tmp_df.to_dict('records')[0]
+                        tmp_acct = AccountRecord(                                
+                            name = tmp_rec['name'],
+                            xbrl = tmp_rec['xbrl'],
+                            table_name = tmp_rec['table_name'],
+                            table_account = tmp_rec['table_title'],
+                            table_column = tmp_rec['col_idx'],
+                            scale = tmp_rec['scale'],
+                            discover_terms = get_default_if_missing(rec=tmp_rec, key='discover_terms'),
+                            search_terms = get_default_if_missing(rec=tmp_rec, key='search_terms'),
+                            exhibits = tmp_rec['exhibits']
+                        )
+                        tmp_accts[account] = tmp_acct
+                    else:
+                        #print(f'ERROR: tmp_df has {tmp_df.shape[0]} rows')
+                        continue
+                tmp_firm = FirmRecord(
+                        Firm = ticker,
+                        accounts = tmp_accts
+                        )
+                config[ticker] = tmp_firm
+            self.firm_records = config
+        return None
+
+
+    def get(self, mode='firm_records'):
+        """"Load all account_info and return config(uration) dict.
+
+        mode = 'firm_records' or 'df'
+        """
+        df = pd.DataFrame(self.dict_records)
+
+        if mode == 'firm_records':
+            return self.firm_records
+        elif mode == 'df':
+            return df
+        else:
+            return None

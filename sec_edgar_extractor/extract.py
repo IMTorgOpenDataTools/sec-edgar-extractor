@@ -28,7 +28,7 @@ from rapidfuzz import process, fuzz
 from .utils import (
     correct_row_list,
     take_val_from_column,
-    load_config_account_info
+    Config
 )
 
 #change default recursion depth until error
@@ -67,17 +67,22 @@ class Extractor():
     """
 
     def __init__(self, config=None, file_path=None, save_intermediate_files=False):
+
+        self.config = None
+        self.save_intermediate_files = save_intermediate_files
+
         if config:
             self.config = config
         elif file_path:
-            self.config = load_config_account_info(file_path)
+            config = Config(file=file_path)
+            config.load_config_account_info()
+            self.config = config
         else:
-            self.config = load_config_account_info()
+            config = Config()
+            config.load_config_account_info()
+            self.config = config
         
-        self.save_intermediate_files = save_intermediate_files
-
-
-
+        
     def execute_extract_process(self, doc, ticker):
         """Run the other class methods in sequence to complete the entire extraction process.
         TODO: replace files if in prod, o/w do not take time to re-run task
@@ -93,11 +98,11 @@ class Extractor():
         clean_up = []
         dir = doc.FS_Location.parents[0]
 
-        if not tkr in self.config.keys():
+        if not tkr in self.config.get().keys():
             result[result_key] = {}
             return result
 
-        for acct, acct_rec in self.config[tkr].accounts.items():
+        for acct, acct_rec in self.config.get()[tkr].accounts.items():
             if doc.Type != acct_rec.exhibits or type(acct_rec.table_account) != str:
                 continue
             print(f'Account: {acct}')
@@ -112,7 +117,7 @@ class Extractor():
             tbl_output_path = output_path / f'{acct}.html'
             pdf_output_path = tbl_output_path.with_suffix('.pdf')
 
-            acct_title = self.config[tkr].accounts[acct].table_account
+            acct_title = self.config.get()[tkr].accounts[acct].table_account
             #check =  self.check_extractable_html(doc.FS_Location, tkr, acct)
             check = True
             if check:
@@ -128,7 +133,7 @@ class Extractor():
                     else:
                         pdf_output_path = hash_map_of_tables_in_pdf[tbl_hash] 
                     df = self.get_df_from_pdf_or_file(pdf_output_path)
-                    col = self.config[tkr].accounts[acct].table_column  
+                    col = self.config.get()[tkr].accounts[acct].table_column  
                     fixed_row = self.get_account_row(df, term=acct_title)    #TODO: chg to col_idx
                     val = take_val_from_column(fixed_row, col)
                     rec[acct] = val
@@ -152,7 +157,7 @@ class Extractor():
         iii) contains account term
 
         """
-        acct = self.config[firm].accounts[account]
+        acct = self.config.get()[firm].accounts[account]
         discover_terms = acct.table_name            #acct.discover_terms
         with open(html_doc, 'r') as file:
             doc_str = file.read()
@@ -339,7 +344,7 @@ class Extractor():
 
 
         start_time = time.time()
-        acct = self.config[firm].accounts[account]
+        acct = self.config.get()[firm].accounts[account]
         table_lst = []
         selected_tables = []
         with open(doc) as f:

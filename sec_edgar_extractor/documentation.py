@@ -86,3 +86,14 @@ class Documentation:
         self.xbrl_codification = pd.DataFrame(recs)
 
         return True
+
+
+    def get_records(self, xbrl_labels):
+        lst = list(xbrl_labels)
+        df_tag = self.xbrl_description[self.xbrl_description['xbrl_tag'].isin(lst)]
+        df_ref = pd.merge(df_tag, self.xbrl_reference_arcs, on='xbrl_tag')
+        df_left = df_ref.explode('link_to', ignore_index=True)
+        df_code = pd.merge(df_left, self.xbrl_codification, left_on='link_to', right_on='label')
+        df_code.drop(columns=['link_to','count','label'], inplace=True)
+        doc_records = df_code.to_dict('records')
+        return doc_records

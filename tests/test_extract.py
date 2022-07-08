@@ -31,8 +31,8 @@ wfc = FirmRecord(
     Firm = 'WFC',
     accounts = {'ACL': acl}
     )
-config = {}
-config['WFC'] = wfc
+rec = {'WFC': wfc}
+config = utils.Config(firm_records=rec)
 
 
 
@@ -87,7 +87,7 @@ def test_format_and_save_table():
 def test_single_record_process():
     html_doc = {'WFC': './tests/data/press_release/wfc4qer01-14x22ex992xsuppl.htm'}
     ex = Extractor(config)
-    firm_title = ex.config['WFC'].accounts['ACL'].table_account
+    firm_title = ex.config.get()['WFC'].accounts['ACL'].table_account
 
     tmp_out = './tests/tmp_out/'
     file_out = 'tbl.html'
