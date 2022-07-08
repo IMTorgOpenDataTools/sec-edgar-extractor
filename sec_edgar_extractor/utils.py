@@ -118,6 +118,25 @@ def take_val_from_column(row, col):
 
 
 
+def robust_str_to_float(val):
+    """Robustly convert string value to float."""
+    def has_numbers_in_parentheses(s):
+        return bool(re.search(r'\(\S+\)', s))
+
+    def has_numbers(inputString):
+        return any(char.isdigit() for char in inputString)
+    if val != None:
+        if val != '' and has_numbers(val):
+            num = float(re.sub("[^0-9.\-]","",val))
+            num_1 = -num if has_numbers_in_parentheses(val) else num
+            return num_1
+        else:
+            return val
+    else:
+        return val
+
+
+
 def correct_row_list(row_list):
     """Correct the input row list so that values can be extracted.
     """
@@ -128,23 +147,8 @@ def correct_row_list(row_list):
         [tmp1.extend(item.split()) for item in row_list if item not in remove_list]
         return tmp1
 
-    def has_numbers_in_parentheses(s):
-        return bool(re.search(r'\(\S+\)', s))
-
-    def has_numbers(inputString):
-        return any(char.isdigit() for char in inputString)
-
-    def robust_str_to_float(val):
-        """Robustly convert string value to float."""
-        if val != '' and has_numbers(val):
-            num = float(re.sub("[^0-9.\-]","",val))
-            num_1 = -num if has_numbers_in_parentheses(val) else num
-            return num_1
-        else:
-            return val
-
     separated_row = separate_items_with_spaces(row_list)
-    float_row = [robust_str_to_float(item) for item in  separated_row ]
+    float_row = [robust_str_to_float(item) for item in  separated_row if item != None]
     nonempty_float_row = [item for item in float_row if item!=None]
     return nonempty_float_row
 
@@ -162,7 +166,10 @@ def load_config_account_info(file=None):
 
     if file==None:
         file = Path(__file__).absolute().parent / 'config/Firm_Account_Info.csv'
-    df = pd.read_csv(file, na_values=['NA',''])
+    df_raw = pd.read_csv(file, na_values=['NA',''])
+    df = df_raw[(df_raw['table_name'].isna() == False)
+                & (df_raw['table_title'].isna() == False)
+                ]
     tickers = df['ticker'].value_counts().index
     accounts = df['name'].value_counts().index
     config = {}

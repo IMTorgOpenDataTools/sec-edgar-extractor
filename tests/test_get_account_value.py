@@ -12,7 +12,7 @@ from sec_edgar_extractor.utils import (
 
 
 def test_correct_row_list():
-    file_path = './tests/data/table_rows.json'
+    file_path = './tests/data/tables/table_rows.json'
     with open(file_path, 'r') as f:
         string = f.read()
         data = json.loads(string)

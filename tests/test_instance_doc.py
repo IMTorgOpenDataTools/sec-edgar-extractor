@@ -20,10 +20,12 @@ def test_instance_extract():
 
     start_time = time.time()
     inst_doc = instance_doc.Instance_Doc()
-    inst_doc.get_tags(file_path_instance, file_path_ixbrl)
-    print(f"log: execution took: {round(time.time() - start_time, 3)}sec")
+    df = inst_doc.combine_all_tags_in_dataframe(file_path_instance, file_path_ixbrl)
+    exec_time = round(time.time() - start_time, 3)
+    print(f"log: execution took: {exec_time}sec")
+    result = all( [exec_time < 180, df.shape[0] == 100] )
 
-    assert True == True
+    assert result == True
 
 
 def test_prepare_config_file():
@@ -36,11 +38,21 @@ def test_prepare_config_file():
     file_path_ixbrl= Path(dir) / file_ixbrl
     file_path_earnings = Path(dir) / file_earnings_release
     xbrl_concept = 'FinancingReceivableAllowanceForCreditLosses'
+    test_rec = {
+            'cik': '',
+            'ticker': '',
+            'xbrl_concept': 'FinancingReceivableAllowanceForCreditLosses',
+            'table_name': 'Table 6: Change in Allowance for Loan and Lease Losses',
+            'table_title': 'Ending balance',
+            'tbl_col_idx': 0,
+            'scale': 'million',
+            'exhibit': '' 
+    }
 
     inst_doc = instance_doc.Instance_Doc()
     rec = inst_doc.prepare_config_file(xbrl_concept, file_path_instance, file_path_ixbrl, file_path_earnings)
 
-    assert True == True
+    assert rec == test_rec
 
 
 def test_get_quarterly_value():

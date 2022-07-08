@@ -38,57 +38,45 @@ config['WFC'] = wfc
 
 def test_check_extractable_html():
     html_doc = {'PNC': './tests/data/press_release/a2021_0601xrlsxpncbbvale.htm',
-                'wfc-99.2': './tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm'
+                'WFC': './tests/data/press_release/wfc4qer01-14x22ex992xsuppl.htm'
                 }
+    account = 'ACL'
     ex = Extractor()
+    results = []
 
-    firm = 'PNC'
-    account = 'ACL'
-    result =  ex.check_extractable_html(html_doc[firm], firm, account)
-    assert result == False
+    for firm in html_doc.keys():
+        out =  ex.check_extractable_html(html_doc[firm], firm, account)
+        results.append(out)
 
-    firm = 'WFC'
-    account = 'ACL'
-    result =  ex.check_extractable_html(html_doc['wfc-99.2'], firm, account)
-    tabular_vals = [rec for rec in result if rec[2] == 'tabular']
-    cnt = len(tabular_vals)
-    assert cnt == 3
+    assert results == [False, True]
 
 
 def test_select_table():
-    """TODO: change to earlier"""
     html_doc = {'PNC': './tests/data/press_release/q420inancialhighlightsandn.htm',
-                'WFC': './tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm',
+                'WFC': './tests/data/press_release/wfc4qer01-14x22ex992xsuppl.htm',
                 'C': './tests/data/press_release/c-20211231xex99d2.htm'
                 }
+    account = 'ACL'
     ex = Extractor()
+    results = []
 
-    firm = 'PNC'
-    account = 'ACL'
-    selected_table =  ex.select_table(html_doc[firm], firm, account)
-    assert len(selected_table) == 25831
+    for firm in html_doc.keys():
+        selected_table =  ex.select_table(html_doc[firm], firm, account)
+        results.append( len(selected_table) )
 
-    firm = 'WFC'
-    account = 'ACL'
-    selected_table =  ex.select_table(html_doc[firm], firm, account)
-    assert len(selected_table) == 144616
-
-    firm = 'C'
-    account = 'ACL'
-    selected_table =  ex.select_table(html_doc[firm], firm, account)
-    assert len(selected_table) == 279219
+    assert results == [25831,  144616, 279219]
 
 
 def test_format_and_save_table():
-    html_doc = {'wfc-99.2': './tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm'}
+    html_doc = {'WFC': './tests/data/press_release/wfc4qer01-14x22ex992xsuppl.htm'}
     ex = Extractor(config)
 
     tmp_out = './tests/tmp_out/'
     file_out = 'tbl.html'
     os.makedirs(tmp_out, exist_ok=True)
-    with open(html_doc['wfc-99.2'], 'r') as file:
+    with open(html_doc['WFC'], 'r') as file:
         doc = file.read()
-    tbl = BeautifulSoup(doc, "lxml").find_all('table')[2]
+    tbl = BeautifulSoup(doc, "lxml").find_all('table')[20]
     
     ex.format_and_save_table(tbl, tmp_out+file_out)
     idx = os.listdir(tmp_out).index(file_out)
@@ -97,14 +85,14 @@ def test_format_and_save_table():
 
 
 def test_single_record_process():
-    html_doc = {'wfc-99.2': './tests/data/wfc/wfc4qer01-14x22ex992xsuppl.htm'}
+    html_doc = {'WFC': './tests/data/press_release/wfc4qer01-14x22ex992xsuppl.htm'}
     ex = Extractor(config)
-    firm_title = ex.config['WFC'].accounts['ACL'].table_name
+    firm_title = ex.config['WFC'].accounts['ACL'].table_account
 
     tmp_out = './tests/tmp_out/'
     file_out = 'tbl.html'
     os.makedirs(tmp_out, exist_ok=True)
-    with open(html_doc['wfc-99.2'], 'r') as file:
+    with open(html_doc['WFC'], 'r') as file:
         doc = file.read()
     tbl = BeautifulSoup(doc, "lxml").find_all('table')[20]
 
@@ -113,13 +101,13 @@ def test_single_record_process():
 
     tmp_pdf = 'tbl.pdf'
     ex.convert_html_to_pdf(path_html=tmp_out+file_out, path_pdf=tmp_out+tmp_pdf)
-    df = ex.get_df_from_pdf(tmp_out+tmp_pdf)
+    df = ex.get_df_from_pdf_or_file(tmp_out+tmp_pdf)        #TODO: camelot cuts-off 'Total' in 'Total allowance for credit losses'
     rows = df.shape[0]
 
     shutil.rmtree(tmp_out, ignore_errors=True)
-    val = ex.get_account_row(df, term=firm_title)
-    flt = utils.robust_str_to_float(val)
-    assert flt == 13788.0
+    fixed_row = ex.get_account_row(df, term=firm_title)
+    val = utils.take_val_from_column(fixed_row, firm_title)
+    assert val == 13788.0
 
 
 def test_convert_html_to_pdf():

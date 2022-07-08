@@ -23,6 +23,8 @@ import pdfkit
 import camelot
 from rapidfuzz import process, fuzz
 
+#from . import utils
+
 from .utils import (
     correct_row_list,
     take_val_from_column,
@@ -60,6 +62,7 @@ class Extractor():
     """Singleton object that maintains config and functionality for extracting data from press-release documents.
     If selected using `save_intermediate_files`, save intermediate files in a path the same name as the extracted file.
     
+    TODO: mod output to dict of {'acct_val': X, 'conf_score': X, 'exec_time': X} for each step, and complete process
     TODO:ALL- html_doc can be path or the file string, by passing file string you don't have to re-read for each step of the process
     """
 
@@ -141,7 +144,7 @@ class Extractor():
 
 
     def check_extractable_html(self, html_doc, firm, account):
-        """Check if html content is consists of an actual web page, or is not-parsable, such as a html wrapper for images.
+        """Check if html content consists of an actual web page, or is not-parsable, such as a html wrapper for images.
 
         Requirements:
         i) good html
@@ -177,7 +180,7 @@ class Extractor():
 
         # rqmt-iii)
         result = []
-        texts = doc.find_all(text = re.compile(discover_terms, re.I))
+        texts = doc.find_all(string = re.compile(discover_terms, re.I))
         for idx, text in enumerate(texts):
             if len(result) == 0:
                 type = 'tabular' if text.find_parent('table') else 'text'
@@ -365,7 +368,10 @@ class Extractor():
         soup = '<meta charset="utf-8">'+table_soup
         with open(path_html, 'w') as file:
             file.write(soup)
-        clean_up.append(path_html)
+        if 'clean_up' in globals():
+            clean_up.append(path_html)
+        else:
+            del path_html
         return True
 
 
@@ -378,7 +384,10 @@ class Extractor():
             "enable-local-file-access": True
             }
         pdfkit.from_file(path_html.__str__(), path_pdf.__str__(), options=options)
-        clean_up.append(path_pdf)
+        if 'clean_up' in globals():
+            clean_up.append(path_pdf)
+        else:
+            del path_pdf
         #wkhtmltopdf(url = path_html, output_file = path_pdf)
         return True
 
@@ -387,7 +396,7 @@ class Extractor():
         """Apply `camelot` to get a dataframe from a pdf file containing only one table.
         This will also 'cache' the dataframe to a csv, and load it, if available.
         """
-        path_csv = path_pdf.with_suffix('.csv')
+        path_csv = Path(path_pdf).with_suffix('.csv')
         file = Path(path_csv)
         if file.exists():
             df_edit = pd.read_csv(path_csv)
@@ -396,7 +405,10 @@ class Extractor():
             df = tables[0].df
             df_edit = df.replace({'\t': ' '}, regex=True)
             df_edit.to_csv(path_csv, index=False)
-            clean_up.append(path_csv)
+            if 'clean-up' in globals():
+                clean_up.append(path_csv)
+            else:
+                del path_csv
         return df_edit
 
 

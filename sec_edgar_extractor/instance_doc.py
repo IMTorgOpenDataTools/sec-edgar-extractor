@@ -177,10 +177,10 @@ class Instance_Doc:
         with open(file_path_ixbrl, 'r') as f:
             file_ixbrl = f.read()
 
-        df_combine = self.create_xbrl_dataframe(file_htm_xml)
+        df_doc, df_combine = self.create_xbrl_dataframe(file_htm_xml)
 
         soup = bs4.BeautifulSoup(file_ixbrl, 'html.parser')
-        df_tmp = df_combine.iloc[0:1000,:]
+        df_tmp = df_combine.iloc[0:100,:]
         result = df_tmp['id_concept'].map(lambda id_concept: self.get_account_table_position(soup, id_concept))
         df_10k = pd.DataFrame.from_dict(result.tolist())
         df = df_tmp.merge(df_10k, left_on='id_concept', right_on='id', how='inner', suffixes=['_comb', '_table'])
@@ -208,7 +208,7 @@ class Instance_Doc:
         with open(file_path_earnings_release, 'r') as f:
             file_earnings = f.read()
 
-        df = self.create_xbrl_dataframe(file_htm_xml)
+        df_doc, df = self.create_xbrl_dataframe(file_htm_xml)
         meta = df[(df['concept'] == xbrl_concept) & (df['start']=='2022-03-31') & (df['dimension']=='')]
         if meta.shape[0] == 1:
             id_concept = meta.id_concept.values[0]
@@ -241,7 +241,7 @@ class Instance_Doc:
         column = line_columns.index(item)
 
         table = [tag for tag in row_candidates[0].parents if tag.name == 'table'][0]
-        table_name = table.previous_sibling.text
+        table_name = table.previous_sibling.text.strip()
 
         def get_scale(table):
             if 'thousand' in table.text:
