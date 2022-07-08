@@ -365,12 +365,12 @@ class Extractor():
         list_of_tuple = [(i,selected_tables.count(i)) for i in selected_tables]
         list_of_tuple.sort(reverse=True, key=lambda x: x[1])
         print(f"log: execution took: {round(time.time() - start_time, 3)}sec")
-        return list_of_tuple[0][0].__str__()
+        return list_of_tuple[0][0]
 
 
     def format_and_save_table(self, table_soup, path_html):
         """"Given a table in a web page, format the table for export to pdf."""
-        soup = '<meta charset="utf-8">'+table_soup
+        soup = '<meta charset="utf-8">' + table_soup.__str__()
         with open(path_html, 'w') as file:
             file.write(soup)
         if 'clean_up' in globals():
@@ -410,7 +410,7 @@ class Extractor():
             df = tables[0].df
             df_edit = df.replace({'\t': ' '}, regex=True)
             df_edit.to_csv(path_csv, index=False)
-            if 'clean-up' in globals():
+            if 'clean_up' in globals():
                 clean_up.append(path_csv)
             else:
                 del path_csv

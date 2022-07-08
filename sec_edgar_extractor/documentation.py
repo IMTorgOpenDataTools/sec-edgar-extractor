@@ -28,6 +28,7 @@ class Documentation:
     def __init__(self):
         self.desc_path = Path(__file__).parent / 'config/us-gaap-doc-2022.xml'
         self.codif_path = Path(__file__).parent / 'config/us-gaap-ref-2022.xml'
+        #TODO: save attr data to pickle and load upon initialization
         self.xbrl_description = None
         self.xbrl_reference_arcs = None
         self.xbrl_codification= None
