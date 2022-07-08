@@ -10,10 +10,12 @@ from sec_edgar_extractor.extract import Extractor
 
 
 
-doc = Documentation()
-doc.load_documents()
+
 
 def test_load_document():
+    doc = Documentation()
+    doc.load_documents()
+
     recs = []
     recs.append( doc.xbrl_description.shape[0] )
     recs.append( doc.xbrl_reference_arcs.shape[0] )
@@ -23,7 +25,10 @@ def test_load_document():
 
 
 def test_create_documentation():
+    doc = Documentation()
+    doc.load_documents()
     ex = Extractor()
+
     df_config = ex.config.get(mode='df')
     xbrl_labels = set( df_config['xbrl'].tolist() )
     doc_records = doc.get_records(xbrl_labels)
