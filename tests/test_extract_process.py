@@ -63,7 +63,7 @@ def test_select_table(ticker, account):
     file = list(index[ticker].items())[0][1]
     doc = path_loc / file
     selected_table =  ex.select_table(doc, ticker, account)
-    result = True if len(selected_table) > 1000 else False
+    result = True if len(selected_table.__str__()) > 1000 else False
     assert result == True
 
 

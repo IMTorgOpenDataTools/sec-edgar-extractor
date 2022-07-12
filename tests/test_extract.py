@@ -21,8 +21,8 @@ acl = AccountRecord(
     xbrl = 'FinancingReceivableAllowanceForCreditLosses',
     table_name = 'ALLOCATION OF ALLOWANCE FOR CREDIT LOSSES FOR LOANS',
     table_account = 'Total allowance for credit losses for loans',
-    table_column = '',
-    scale = '',
+    table_column = 0,
+    scale = 'millions',
     discover_terms = 'allowance',
     search_terms = 'Total allowance for credit|Allowance for credit',
     exhibits = 'EX-99.2'
@@ -62,7 +62,7 @@ def test_select_table():
 
     for firm in html_doc.keys():
         selected_table =  ex.select_table(html_doc[firm], firm, account)
-        results.append( len(selected_table) )
+        results.append( len(selected_table.__str__()) )
 
     assert results == [25831,  144616, 279219]
 
@@ -97,7 +97,8 @@ def test_single_record_process():
     tbl = BeautifulSoup(doc, "lxml").find_all('table')[20]
 
     ex.format_and_save_table(tbl, tmp_out+file_out)
-    idx = os.listdir(tmp_out).index(file_out)
+    idx = ex.config.get()['WFC'].accounts['ACL'].table_column
+    #idx = os.listdir(tmp_out).index(file_out)
 
     tmp_pdf = 'tbl.pdf'
     ex.convert_html_to_pdf(path_html=tmp_out+file_out, path_pdf=tmp_out+tmp_pdf)
@@ -106,7 +107,7 @@ def test_single_record_process():
 
     shutil.rmtree(tmp_out, ignore_errors=True)
     fixed_row = ex.get_account_row(df, term=firm_title)
-    val = utils.take_val_from_column(fixed_row, firm_title)
+    val = utils.take_val_from_column(fixed_row, idx)
     assert val == 13788.0
 
 

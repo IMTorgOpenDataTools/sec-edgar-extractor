@@ -28,7 +28,8 @@ def test_correct_row_list():
 
 
 def test_take_val_from_column():
-    col = '<left-most>'
+    #col = '<left-most>'
+    col = 0
     row = [2058, 2265, 2262, 8578, 8936]
     val = take_val_from_column(row, col)
     assert val == 2058
