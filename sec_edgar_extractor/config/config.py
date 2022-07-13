@@ -18,7 +18,8 @@ account_defaults = {
 
 AccountRecord = namedtuple(
     "AccountRecord",
-    [   'name',
+    [   'timeperiod',
+        'name',
         'xbrl',
         'table_name',
         'table_account',

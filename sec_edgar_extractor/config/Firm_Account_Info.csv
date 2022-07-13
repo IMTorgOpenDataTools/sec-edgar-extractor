@@ -1,35 +1,35 @@
-ticker,name,xbrl,table_name,table_title,col_idx,scale,discover_terms,search_terms,exhibits
-TFC,ACL,FinancingReceivableAllowanceForCreditLosses,Allowance for Credit Losses,Ending balance,0,millions,NA,NA,EX-99.2
-TFC,Loans,NotesReceivableGross,Consolidated Ending Balance Sheets - Five Quarter Trend,Total loans and leases,0,millions,NA,NA,EX-99.2
-USB,ACL,FinancingReceivableAllowanceForCreditLosses,ALLOWANCE FOR CREDIT LOSSES,Total allowance for credit losses,0,millions,NA,NA,EX-99.1
-USB,Loans,NotesReceivableGross,CONSOLIDATED ENDING BALANCE SHEET,Total loans,0,millions,NA,NA,EX-99.1
-PNC,ACL,FinancingReceivableAllowanceForCreditLosses,Allowance for Credit Losses by Loan Class,Allowance for credit losses,0,millions,NA,NA,EX-99.1
-PNC,Loans,FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss,Consolidated Balance Sheet,Net loans,0,millions,NA,NA,EX-99.1
-WFC,ACL,FinancingReceivableAllowanceForCreditLosses,CHANGES IN ALLOWANCE FOR CREDIT LOSSES FOR LOANS,Allowance for credit losses for loans,0,millions,NA,NA,EX-99.2
-WFC,Loans,NotesReceivableGross,CONSOLIDATED BALANCE SHEET,Loans,0,millions,NA,NA,EX-99.2
-ALLY,ACL,FinancingReceivableAllowanceForCreditLosses,CONSOLIDATED PERIOD-END BALANCE SHEET,Allowance for loan losses,0,millions,NA,NA,EX-99.3
-ALLY,Loans,NotesReceivableGross,CONSOLIDATED PERIOD-END BALANCE SHEET,"Total finance receivables and loans, net",0,millions,NA,NA,EX-99.3
-GS,ACL,FinancingReceivableAllowanceForCreditLosses,NA,NA,0,millions,NA,NA,NA
-GS,Loans,NotesReceivableGross,Condensed Consolidated Balance Sheets,Loans,0,billions,NA,NA,EX-99.1
-JPM,ACL,FinancingReceivableAllowanceForCreditLosses,CONSOLIDATED BALANCE SHEETS,Less: Allowance for loan losses,0,millions,NA,NA,EX-99.2
-JPM,Loans,NotesReceivableGross,CONSOLIDATED FINANCIAL HIGHLIGHTS,Total Loans,0,millions,NA,NA,EX-99.2
-C,ACL,FinancingReceivableAllowanceForCreditLosses,CITIGROUP CONSOLIDATED BALANCE SHEET,Allowance for credit losses on loans (ACLL),4,millions,NA,NA,EX-99.2
-C,Loans,NotesReceivableGross,CITIGROUP CONSOLIDATED BALANCE SHEET,"Total loans, net",4,millions,NA,NA,EX-99.2
-CFG,ACL,FinancingReceivableAllowanceForCreditLosses,Credit quality review,Allowance for credit losses,0,millions,NA,NA,EX-99.1
-CFG,Loans,NotesReceivableGross,Interest-earning assets,Total loans and leases,0,millions,NA,NA,EX-99.1
-KEY,ACL,FinancingReceivableAllowanceForCreditLosses,Consolidated Balance Sheets,Allowance for loan and lease losses,0,millions,NA,NA,EX-99.3
-KEY,Loans,NotesReceivableGross,Consolidated Balance Sheets,Loans,0,millions,NA,NA,EX-99.3
-AXP,ACL,FinancingReceivableAllowanceForCreditLosses,Selected Credit Related Statistical Information,Ending balance,0,millions,NA,NA,EX-99.2
-AXP,Loans,NotesReceivableGross,Selected Credit Related Statistical Information,Total loans,0,billions,NA,NA,EX-99.2
-COF,ACL,FinancingReceivableAllowanceForCreditLosses,Consolidated Balance Sheets,Allowance for credit losses,0,millions,NA,NA,EX-99.2
-COF,Loans,NotesReceivableGross,Consolidated Balance Sheets,Total loans held for investment,0,millions,NA,NA,EX-99.2
-FITB,ACL,FinancingReceivableAllowanceForCreditLosses,Credit Quality Summary,Total allowance for credit losses (ACL),0,millions,NA,NA,EX-99.1
-FITB,Loans,NotesReceivableGross,Credit Quality Summary,Portfolio loans and leases,0,millions,NA,NA,EX-99.1
-HBAN,ACL,FinancingReceivableAllowanceForCreditLosses,Quarterly Credit Reserves Analysis,"Total allowance for credit losses, end of period",0,millions,NA,NA,EX-99.2
-HBAN,Loans,NotesReceivableGross,Loans and Leases Composition,Total loans and leases,0,millions,NA,NA,EX-99.2
-MS,ACL,FinancingReceivableAllowanceForCreditLosses,Allowance for Credit Losses (ACL) as of,Total Loans,1,millions,NA,NA,EX-99.2
-MS,Loans,NotesReceivableGross,Allowance for Credit Losses (ACL) as of,Total Loans,0,millions,NA,NA,EX-99.2
-BAC,ACL,FinancingReceivableAllowanceForCreditLosses,Consolidated Balance Sheets,Allowance for loan and lease losses,0,millions,NA,NA,EX-99.3
-BAC,Loans,NotesReceivableGross,Consolidated Balance Sheets,Loans and leases,0,millions,NA,NA,EX-99.3
-BKU,ACL,FinancingReceivableAllowanceForCreditLosses,CONSOLIDATED BALANCE SHEETS,Allowance for credit losses,0,thousands,NA,NA,EX-99.1
-BKU,Loans,NotesReceivableGross,CONSOLIDATED BALANCE SHEETS,Loans,0,thousands,NA,NA,EX-99.1
+timeperiod,ticker,name,xbrl,table_name,table_title,col_idx,scale,discover_terms,search_terms,exhibits
+"(2021-Q2, Present)",TFC,ACL,FinancingReceivableAllowanceForCreditLosses,Allowance for Credit Losses,Ending balance,0,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",TFC,Loans,NotesReceivableGross,Consolidated Ending Balance Sheets - Five Quarter Trend,Total loans and leases,0,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",USB,ACL,FinancingReceivableAllowanceForCreditLosses,ALLOWANCE FOR CREDIT LOSSES,Total allowance for credit losses,0,millions,NA,NA,EX-99.1
+"(2021-Q2, Present)",USB,Loans,NotesReceivableGross,CONSOLIDATED ENDING BALANCE SHEET,Total loans,0,millions,NA,NA,EX-99.1
+"(2021-Q2, Present)",PNC,ACL,FinancingReceivableAllowanceForCreditLosses,Allowance for Credit Losses by Loan Class,Allowance for credit losses,0,millions,NA,NA,EX-99.1
+"(2021-Q2, Present)",PNC,Loans,FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss,Consolidated Balance Sheet,Net loans,0,millions,NA,NA,EX-99.1
+"(2021-Q2, Present)",WFC,ACL,FinancingReceivableAllowanceForCreditLosses,CHANGES IN ALLOWANCE FOR CREDIT LOSSES FOR LOANS,Allowance for credit losses for loans,0,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",WFC,Loans,NotesReceivableGross,CONSOLIDATED BALANCE SHEET,Loans,0,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",ALLY,ACL,FinancingReceivableAllowanceForCreditLosses,CONSOLIDATED PERIOD-END BALANCE SHEET,Allowance for loan losses,0,millions,NA,NA,EX-99.3
+"(2021-Q2, Present)",ALLY,Loans,NotesReceivableGross,CONSOLIDATED PERIOD-END BALANCE SHEET,"Total finance receivables and loans, net",0,millions,NA,NA,EX-99.3
+"(2021-Q2, Present)",GS,ACL,FinancingReceivableAllowanceForCreditLosses,NA,NA,0,millions,NA,NA,NA
+"(2021-Q2, Present)",GS,Loans,NotesReceivableGross,Condensed Consolidated Balance Sheets,Loans,0,billions,NA,NA,EX-99.1
+"(2021-Q2, Present)",JPM,ACL,FinancingReceivableAllowanceForCreditLosses,CONSOLIDATED BALANCE SHEETS,Less: Allowance for loan losses,0,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",JPM,Loans,NotesReceivableGross,CONSOLIDATED FINANCIAL HIGHLIGHTS,Total Loans,0,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",C,ACL,FinancingReceivableAllowanceForCreditLosses,CITIGROUP CONSOLIDATED BALANCE SHEET,Allowance for credit losses on loans (ACLL),4,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",C,Loans,NotesReceivableGross,CITIGROUP CONSOLIDATED BALANCE SHEET,"Total loans, net",4,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",CFG,ACL,FinancingReceivableAllowanceForCreditLosses,Credit quality review,Allowance for credit losses,0,millions,NA,NA,EX-99.1
+"(2021-Q2, Present)",CFG,Loans,NotesReceivableGross,Interest-earning assets,Total loans and leases,0,millions,NA,NA,EX-99.1
+"(2021-Q2, Present)",KEY,ACL,FinancingReceivableAllowanceForCreditLosses,Consolidated Balance Sheets,Allowance for loan and lease losses,0,millions,NA,NA,EX-99.3
+"(2021-Q2, Present)",KEY,Loans,NotesReceivableGross,Consolidated Balance Sheets,Loans,0,millions,NA,NA,EX-99.3
+"(2021-Q2, Present)",AXP,ACL,FinancingReceivableAllowanceForCreditLosses,Selected Credit Related Statistical Information,Ending balance,0,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",AXP,Loans,NotesReceivableGross,Selected Credit Related Statistical Information,Total loans,0,billions,NA,NA,EX-99.2
+"(2021-Q2, Present)",COF,ACL,FinancingReceivableAllowanceForCreditLosses,Consolidated Balance Sheets,Allowance for credit losses,0,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",COF,Loans,NotesReceivableGross,Consolidated Balance Sheets,Total loans held for investment,0,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",FITB,ACL,FinancingReceivableAllowanceForCreditLosses,Credit Quality Summary,Total allowance for credit losses (ACL),0,millions,NA,NA,EX-99.1
+"(2021-Q2, Present)",FITB,Loans,NotesReceivableGross,Credit Quality Summary,Portfolio loans and leases,0,millions,NA,NA,EX-99.1
+"(2021-Q2, Present)",HBAN,ACL,FinancingReceivableAllowanceForCreditLosses,Quarterly Credit Reserves Analysis,"Total allowance for credit losses, end of period",0,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",HBAN,Loans,NotesReceivableGross,Loans and Leases Composition,Total loans and leases,0,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",MS,ACL,FinancingReceivableAllowanceForCreditLosses,Allowance for Credit Losses (ACL) as of,Total Loans,1,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",MS,Loans,NotesReceivableGross,Allowance for Credit Losses (ACL) as of,Total Loans,0,millions,NA,NA,EX-99.2
+"(2021-Q2, Present)",BAC,ACL,FinancingReceivableAllowanceForCreditLosses,Consolidated Balance Sheets,Allowance for loan and lease losses,0,millions,NA,NA,EX-99.3
+"(2021-Q2, Present)",BAC,Loans,NotesReceivableGross,Consolidated Balance Sheets,Loans and leases,0,millions,NA,NA,EX-99.3
+"(2021-Q2, Present)",BKU,ACL,FinancingReceivableAllowanceForCreditLosses,CONSOLIDATED BALANCE SHEETS,Allowance for credit losses,0,thousands,NA,NA,EX-99.1
+"(2021-Q2, Present)",BKU,Loans,NotesReceivableGross,CONSOLIDATED BALANCE SHEETS,Loans,0,thousands,NA,NA,EX-99.1

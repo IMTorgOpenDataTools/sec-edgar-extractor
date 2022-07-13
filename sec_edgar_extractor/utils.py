@@ -198,6 +198,11 @@ class Config():
             df = df_raw[(df_raw['table_name'].isna() == False)
                         & (df_raw['table_title'].isna() == False)
                         ]
+            begin = df['timeperiod'].str.split(',').str[0].str.split('(').str[1].str.strip()
+            end = df['timeperiod'].str.split(',').str[1].str.split(')').str[0].str.strip()
+            dt_begin =  pd.to_datetime(begin).dt.date
+            dt_end = end.apply(lambda x: pd.to_datetime(x).dt.date if x!= 'Present' else pd.Timestamp.now().date() )
+            df['timeperiod'] = list( zip(dt_begin, dt_end))
             self.dict_records = df.to_dict('records')
 
             #dicts
@@ -210,7 +215,8 @@ class Config():
                     tmp_df = df[(df['ticker']== ticker) & (df['name']==account)]
                     if tmp_df.shape[0] == 1:
                         tmp_rec = tmp_df.to_dict('records')[0]
-                        tmp_acct = AccountRecord(                                
+                        tmp_acct = AccountRecord(      
+                            timeperiod = tmp_rec['timeperiod'],                         
                             name = tmp_rec['name'],
                             xbrl = tmp_rec['xbrl'],
                             table_name = tmp_rec['table_name'],
