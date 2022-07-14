@@ -6,6 +6,7 @@ __version__ = "0.1.0"
 __license__ = "MIT"
 
 
+#from msilib.schema import Error
 import sys
 from pathlib import Path
 import pickle
@@ -52,9 +53,10 @@ config_template = [
 
 class Doc:
     """Interface for the DocumentMetadata namedTuple."""
-    def __init__(self, Type, FS_Location):
+    def __init__(self, Type, FS_Location, report_date):
         self.Type = Type
         self.FS_Location = Path(FS_Location)
+        self.report_date = report_date
 
 
 
@@ -85,71 +87,76 @@ class Extractor():
         
     def execute_extract_process(self, doc, ticker):
         """Run the other class methods in sequence to complete the entire extraction process.
-        TODO: replace files if in prod, o/w do not take time to re-run task
         """
+        # variables
         result = {}
-        rec = {}
-        tkr = ticker
-        result_key = doc.FS_Location.name       #TODO: ('|').join(doc.FS_Location.__str__().split('/')[7:9])
+        record = {}
+        result_key = doc.FS_Location.name
         print(f'Directory: {result_key}')
 
         hash_map_of_tables_in_pdf = {}
+        global config
+        config = self.config.get(doc.report_date)
         global clean_up
         clean_up = []
-        dir = doc.FS_Location.parents[0]
 
-        if not tkr in self.config.get().keys():
+        # initial checks
+        if (config == {}) or (not ticker in config.keys()):
             result[result_key] = {}
             return result
 
-        for acct, acct_rec in self.config.get()[tkr].accounts.items():
+        for acct, acct_rec in config[ticker].accounts.items():
             if doc.Type != acct_rec.exhibits or type(acct_rec.table_account) != str:
                 continue
             print(f'Account: {acct}')
 
             if self.save_intermediate_files:
                 itermediate_dir = doc.FS_Location.stem
-
             else:
                 itermediate_dir = 'tmp'
-            output_path = dir / itermediate_dir 
+            
+            # paths
+            output_path = doc.FS_Location.parents[0] / itermediate_dir 
             output_path.mkdir(parents=True, exist_ok=True)
             tbl_output_path = output_path / f'{acct}.html'
             pdf_output_path = tbl_output_path.with_suffix('.pdf')
 
-            acct_title = self.config.get()[tkr].accounts[acct].table_account
-            #check =  self.check_extractable_html(doc.FS_Location, tkr, acct)
-            check = True
-            if check:
-                try:
-                    selected_table = self.select_table(doc.FS_Location, tkr, acct)
-                    tbl_hash = hash(selected_table)
-                    if tbl_hash not in hash_map_of_tables_in_pdf.keys():
-                        self.format_and_save_table(selected_table, tbl_output_path)    #previously: selected_table[0]['string']
-                        self.convert_html_to_pdf(path_html=tbl_output_path, 
-                                                path_pdf=pdf_output_path
-                                                )
-                        hash_map_of_tables_in_pdf[tbl_hash] = pdf_output_path
-                    else:
-                        pdf_output_path = hash_map_of_tables_in_pdf[tbl_hash] 
-                    df = self.get_df_from_pdf_or_file(pdf_output_path)
-                    col = self.config.get()[tkr].accounts[acct].table_column  
-                    fixed_row = self.get_account_row(df, term=acct_title)    #TODO: chg to col_idx
-                    val = take_val_from_column(fixed_row, col)
-                    rec[acct] = val
-                except Exception as e:
-                    print(f"Exception: {e}")
-                    continue
-            else:
+            #check_html =  self.check_extractable_html(doc, tkr, acct)
+            check_html = True
+            if not check_html:
                 continue
-        result[result_key] = rec
+
+            try:
+                selected_table = self.select_table(doc, ticker, acct)
+                tbl_hash = hash(selected_table)
+                if tbl_hash not in hash_map_of_tables_in_pdf.keys():
+                    self.format_and_save_table(selected_table, tbl_output_path)    #previously: selected_table[0]['string']
+                    self.convert_html_to_pdf(path_html=tbl_output_path, 
+                                            path_pdf=pdf_output_path
+                                            )
+                    hash_map_of_tables_in_pdf[tbl_hash] = pdf_output_path
+                else:
+                    pdf_output_path = hash_map_of_tables_in_pdf[tbl_hash] 
+                df = self.get_df_from_pdf_or_file(pdf_output_path)
+                col = config[ticker].accounts[acct].table_column
+                acct_title = config[ticker].accounts[acct].table_account  
+                fixed_row = self.get_account_row(df, term=acct_title)    #TODO: chg to col_idx
+                val = take_val_from_column(fixed_row, col)
+                record[acct] = val
+
+            except Exception as e:
+                print(f"Exception: {e}")
+                continue
+
+        result[result_key] = record
         if not self.save_intermediate_files:
             [Path.unlink(file) for file in clean_up]
         return result
 
 
-    def check_extractable_html(self, html_doc, firm, account):
+    def check_extractable_html(self, doc, firm, account):
         """Check if html content consists of an actual web page, or is not-parsable, such as a html wrapper for images.
+        This requires uTidylib for html functionality.
 
         Requirements:
         i) good html
@@ -157,9 +164,9 @@ class Extractor():
         iii) contains account term
 
         """
-        acct = self.config.get()[firm].accounts[account]
+        acct = self.config.get(doc.report_date)[firm].accounts[account]
         discover_terms = acct.table_name            #acct.discover_terms
-        with open(html_doc, 'r') as file:
+        with open(doc.FS_Location, 'r') as file:
             doc_str = file.read()
         doc = BeautifulSoup(doc_str, 'lxml')
 
@@ -344,10 +351,12 @@ class Extractor():
 
 
         start_time = time.time()
-        acct = self.config.get()[firm].accounts[account]
+        if self.config.get(doc.report_date) == {}:
+            raise Exception(f'filing is outside time period: {doc.report_date}')
+        acct = self.config.get(doc.report_date)[firm].accounts[account]
         table_lst = []
         selected_tables = []
-        with open(doc) as f:
+        with open(doc.FS_Location) as f:
             html = f.read()
             soup = BeautifulSoup(html, 'html.parser')    #only this parser has access to Tag.sourceline, Tag.sourcepos (if needed)
             # find tags

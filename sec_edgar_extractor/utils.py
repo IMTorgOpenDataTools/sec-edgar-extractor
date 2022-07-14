@@ -186,11 +186,6 @@ class Config():
     def load_config_account_info(self):
         """"Load all account_info as dict('records') in Config.
         """
-        #support
-        def get_default_if_missing(rec, key):
-            defaults = account_defaults
-            acct = account
-            return rec[key] if math.isnan(rec[key]) == False else defaults[acct]['term']
 
         if self.file != None:
             #df records
@@ -204,52 +199,79 @@ class Config():
             dt_end = end.apply(lambda x: pd.to_datetime(x).dt.date if x!= 'Present' else pd.Timestamp.now().date() )
             df['timeperiod'] = list( zip(dt_begin, dt_end))
             self.dict_records = df.to_dict('records')
-
-            #dicts
-            tickers = df['ticker'].value_counts().index
-            accounts = df['name'].value_counts().index
-            config = {}
-            for ticker in tickers:
-                tmp_accts = {}
-                for account in accounts:
-                    tmp_df = df[(df['ticker']== ticker) & (df['name']==account)]
-                    if tmp_df.shape[0] == 1:
-                        tmp_rec = tmp_df.to_dict('records')[0]
-                        tmp_acct = AccountRecord(      
-                            timeperiod = tmp_rec['timeperiod'],                         
-                            name = tmp_rec['name'],
-                            xbrl = tmp_rec['xbrl'],
-                            table_name = tmp_rec['table_name'],
-                            table_account = tmp_rec['table_title'],
-                            table_column = tmp_rec['col_idx'],
-                            scale = tmp_rec['scale'],
-                            discover_terms = get_default_if_missing(rec=tmp_rec, key='discover_terms'),
-                            search_terms = get_default_if_missing(rec=tmp_rec, key='search_terms'),
-                            exhibits = tmp_rec['exhibits']
-                        )
-                        tmp_accts[account] = tmp_acct
-                    else:
-                        #print(f'ERROR: tmp_df has {tmp_df.shape[0]} rows')
-                        continue
-                tmp_firm = FirmRecord(
-                        Firm = ticker,
-                        accounts = tmp_accts
-                        )
-                config[ticker] = tmp_firm
-            self.firm_records = config
-        return None
+        return True
 
 
-    def get(self, mode='firm_records'):
-        """"Load all account_info and return config(uration) dict.
+    def convert_df_to_firm_records(self, df):
+        """Convert df to firm records, typically after df['timeperiod'] is filtered."""
 
+        #support
+        def get_default_if_missing(rec, key):
+            defaults = account_defaults
+            acct = account
+            return rec[key] if math.isnan(rec[key]) == False else defaults[acct]['term']
+
+        #dicts
+        tickers = df['ticker'].value_counts().index
+        accounts = df['name'].value_counts().index
+        config = {}
+        for ticker in tickers:
+            tmp_accts = {}
+            for account in accounts:
+                tmp_df = df[(df['ticker']== ticker) & (df['name']==account)]
+                if tmp_df.shape[0] == 1:
+                    tmp_rec = tmp_df.to_dict('records')[0]
+                    tmp_acct = AccountRecord(      
+                        timeperiod = tmp_rec['timeperiod'],                         
+                        name = tmp_rec['name'],
+                        xbrl = tmp_rec['xbrl'],
+                        table_name = tmp_rec['table_name'],
+                        table_account = tmp_rec['table_title'],
+                        table_column = tmp_rec['col_idx'],
+                        scale = tmp_rec['scale'],
+                        discover_terms = get_default_if_missing(rec=tmp_rec, key='discover_terms'),
+                        search_terms = get_default_if_missing(rec=tmp_rec, key='search_terms'),
+                        exhibits = tmp_rec['exhibits']
+                    )
+                    tmp_accts[account] = tmp_acct
+                else:
+                    #print(f'ERROR: tmp_df has {tmp_df.shape[0]} rows')
+                    continue
+            tmp_firm = FirmRecord(
+                    Firm = ticker,
+                    accounts = tmp_accts
+                    )
+            config[ticker] = tmp_firm
+        #self.firm_records = config
+        return config
+
+
+    def get(self, report_date, mode='firm_records'):
+        """"Return config(uration) dict based on a filings' report date.
+
+        report_date = '2021-Q3' or '2021-01-01'
         mode = 'firm_records' or 'df'
         """
-        df = pd.DataFrame(self.dict_records)
+        report = pd.to_datetime(report_date)
+
+        if self.dict_records:
+            df = pd.DataFrame(self.dict_records)
+            df_out = df[(df['timeperiod'].str[0] < report)
+                        & (df['timeperiod'].str[1] > report) 
+                        ]
+            firm_records_out = self.convert_df_to_firm_records(df_out)
+
+        elif self.firm_records:
+            firm_records_out = {}
+            for firm, firm_rec in self.firm_records.items():
+                for acct, acct_rec  in firm_rec.accounts.items():
+                    if (acct_rec.timeperiod[0] < report) and (acct_rec.timeperiod[1] > report):
+                        firm_records_out[firm] = firm_rec
 
         if mode == 'firm_records':
-            return self.firm_records
-        elif mode == 'df':
-            return df
+            return firm_records_out
+        elif mode == 'df' and df_out:
+            return df_out
         else:
+            print('error: records do not exist')
             return None
