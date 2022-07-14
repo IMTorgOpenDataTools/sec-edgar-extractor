@@ -50,7 +50,7 @@ def test_select_table(ticker, account, file):
     report_date = index[ticker][file]['report_date']
     loc = path_loc / file
 
-    doc = Doc(Type=desc, FS_Location=loc, report_date=report_date)
+    doc = Doc(Type=desc, FS_Location=loc, Report_date=report_date)
     selected_table =  ex.select_table(doc, ticker, account)
     result = True if len(selected_table.__str__()) > 1000 else False
     assert result == True
@@ -65,7 +65,7 @@ def test_extract_process(ticker, account, file):
     account_value = index[ticker][file]['output'][account]
     loc = path_loc / file
 
-    doc = Doc(Type=desc, FS_Location=loc, report_date=report_date)
+    doc = Doc(Type=desc, FS_Location=loc, Report_date=report_date)
     rec = ex.execute_extract_process(doc=doc, ticker=ticker)
     val = rec[file][account]
     assert val == account_value
@@ -87,7 +87,7 @@ def test_extract_process_no_config_data():
     output = {html_file: {}}
 
     loc = path_loc / html_file
-    doc = Doc(Type=desc, FS_Location=loc, report_date=report_date)
+    doc = Doc(Type=desc, FS_Location=loc, Report_date=report_date)
     rec = ex.execute_extract_process(doc=doc, ticker=tkr)
 
     assert rec[html_file] == output[html_file]    

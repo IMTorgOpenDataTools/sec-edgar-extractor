@@ -270,7 +270,7 @@ class Config():
 
         if mode == 'firm_records':
             return firm_records_out
-        elif mode == 'df' and df_out:
+        elif (mode == 'df') and (df_out.shape[0] > 0):
             return df_out
         else:
             print('error: records do not exist')

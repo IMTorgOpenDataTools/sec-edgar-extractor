@@ -49,7 +49,7 @@ def test_check_extractable_html():
     for firm, meta in html_doc.items():
         doc = Doc(Type=meta['desc'], 
                     FS_Location=meta['path'], 
-                    report_date=meta['report_date']
+                    Report_date=meta['report_date']
                     )
         out =  ex.check_extractable_html(doc, firm, account)
         results.append(out)
@@ -69,7 +69,7 @@ def test_select_table():
     for firm, meta in html_doc.items():
         doc = Doc(Type=meta['desc'], 
                     FS_Location=meta['path'], 
-                    report_date=meta['report_date']
+                    Report_date=meta['report_date']
                     )
         selected_table = ex.select_table(doc, firm, account)
         results.append( len(selected_table.__str__()) )

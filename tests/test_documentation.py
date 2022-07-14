@@ -29,8 +29,9 @@ def test_create_documentation():
     doc.load_documents()
     ex = Extractor()
 
-    df_config = ex.config.get(mode='df')
+    report_date = '2021-07-01'
+    df_config = ex.config.get(report_date=report_date, mode='df')
     xbrl_labels = set( df_config['xbrl'].tolist() )
     doc_records = doc.get_records(xbrl_labels)
 
-    assert len(doc_records) == 19
+    assert len(doc_records) == 20

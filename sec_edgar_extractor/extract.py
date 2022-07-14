@@ -53,10 +53,10 @@ config_template = [
 
 class Doc:
     """Interface for the DocumentMetadata namedTuple."""
-    def __init__(self, Type, FS_Location, report_date):
+    def __init__(self, Type, FS_Location, Report_date):
         self.Type = Type
         self.FS_Location = Path(FS_Location)
-        self.report_date = report_date
+        self.Report_date = Report_date
 
 
 
@@ -96,7 +96,7 @@ class Extractor():
 
         hash_map_of_tables_in_pdf = {}
         global config
-        config = self.config.get(doc.report_date)
+        config = self.config.get(doc.Report_date)
         global clean_up
         clean_up = []
 
@@ -164,7 +164,7 @@ class Extractor():
         iii) contains account term
 
         """
-        acct = self.config.get(doc.report_date)[firm].accounts[account]
+        acct = self.config.get(doc.Report_date)[firm].accounts[account]
         discover_terms = acct.table_name            #acct.discover_terms
         with open(doc.FS_Location, 'r') as file:
             doc_str = file.read()
@@ -351,9 +351,9 @@ class Extractor():
 
 
         start_time = time.time()
-        if self.config.get(doc.report_date) == {}:
-            raise Exception(f'filing is outside time period: {doc.report_date}')
-        acct = self.config.get(doc.report_date)[firm].accounts[account]
+        if self.config.get(doc.Report_date) == {}:
+            raise Exception(f'filing is outside time period: {doc.Report_date}')
+        acct = self.config.get(doc.Report_date)[firm].accounts[account]
         table_lst = []
         selected_tables = []
         with open(doc.FS_Location) as f:
